@@ -1,15 +1,16 @@
 #!/bin/bash
-# Un script que cree un nuevo directorio con un nombre proporcionado por el usuario.
 
+# Enunciado: Crea un script que cuente y muestre el número total de archivos 
+# regulares (no directorios) que existen en el directorio actual.
 
-# Pedir al usuario el nombre del nuevo directorio
-echo "Introduce el nombre del directorio que quieres crear:"
+CONTADOR=0
+echo "--- Contando archivos en el directorio actual (./) ---"
+for ELEMENTO in *; do
+    if [[ -f "$ELEMENTO" ]]; then
+        CONTADOR=$((CONTADOR + 1))
+    fi
+done
 
-# Leer el nombre del directorio y guardarlo en la variable 'nombre_directorio'
-read nombre_directorio
-
-# Crear el directorio utilizando el comando mkdir
-mkdir "$nombre_directorio"
-
-# Informar al usuario que el directorio ha sido creado
-echo "Se ha creado el directorio '$nombre_directorio'."
+echo "--------------------------------------------------------"
+echo "Número total de archivos regulares encontrados: $CONTADOR"
+echo "--------------------------------------------------------"

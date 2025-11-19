@@ -1,16 +1,31 @@
 #!/bin/bash
 
-# Un script que salude al usuario y le muestre la fecha y hora actual.
+# Enunciado: Crea un script que solicite al usuario la ruta de un archivo y genere 
+# automáticamente una copia de seguridad del mismo añadiendo la extensión .bak 
+# al nombre original.
 
-# Pedir al usuario que introduzca su nombre
-echo "Por favor, introduce tu nombre:"
+# 1. Solicitar al usuario la ruta completa del archivo original
+read -p "Introduce la ruta completa del archivo a copiar: " ARCHIVO_ORIGINAL
 
-# Leer el nombre introducido por el usuario y guardarlo en la variable 'nombre'
-read nombre
+# 2. Verificar si el archivo original existe
+if [[ ! -f "$ARCHIVO_ORIGINAL" ]]; then
+    echo "Error: El archivo '$ARCHIVO_ORIGINAL' no existe o no es un archivo válido."
+    exit 1
+fi
 
-# Obtener la fecha y la hora actuales y guardarlas en la variable 'fecha_actual'
-fecha_actual=$(date)
+# 3. Construir la ruta y el nombre del archivo de copia
+# Simplemente se añade ".bak" al final del nombre del archivo original
+ARCHIVO_COPIA="${ARCHIVO_ORIGINAL}.bak"
 
-# Mostrar el saludo personalizado y la fecha
-echo "¡Hola, $nombre!"
-echo "La fecha y hora actuales son: $fecha_actual"
+# 4. Mostrar información de la operación
+echo "Archivo original: $ARCHIVO_ORIGINAL"
+echo "Archivo de copia (backup): $ARCHIVO_COPIA"
+
+# 5. Ejecutar el comando de copia
+# El comando 'cp' copia el primer argumento (ORIGEN) al segundo (DESTINO)
+if cp "$ARCHIVO_ORIGINAL" "$ARCHIVO_COPIA"; then
+    echo "Éxito: Se ha creado la copia de seguridad correctamente."
+else
+    echo "Error: Fallo al crear la copia de seguridad."
+    exit 1
+fi
