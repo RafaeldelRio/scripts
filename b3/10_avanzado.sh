@@ -9,8 +9,6 @@ Modifique el ejercicio anterior para que:
 netaddr 192.168.25.4 255.255.254.0
 FIN
 
-set -euo pipefail
-
 # Utilidades de conversión IPv4 <-> entero para operar con bit a bit.
 ip_to_int() {
 	local IFS='.'

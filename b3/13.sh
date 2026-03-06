@@ -24,14 +24,14 @@ FIN
 
 
 # Recibe nombre de grupo del que se quiere generar seguimiento.
-if [ "$#" -ne 1 ]; then
+if [[ "$#" -ne 1 ]]; then
     echo "Uso: $0 grupo" >&2
     exit 2
 fi
 
 group_name="$1"
 group_entry="$(getent group "$group_name" || true)"
-if [ -z "$group_entry" ]; then
+if [[ -z "$group_entry" ]]; then
     echo "Error: el grupo $group_name no existe." >&2
     exit 1
 fi
@@ -48,7 +48,7 @@ group_members="$(echo "$group_entry" | cut -d: -f4)"
 
 # Incluye usuarios con grupo principal igual al grupo solicitado.
 while IFS=: read -r user _ _ gid _ _ _; do
-    if [ "$gid" = "$group_gid" ]; then
+    if [[ "$gid" = "$group_gid" ]]; then
         users["$user"]=1
     fi
 done < /etc/passwd
@@ -56,7 +56,7 @@ done < /etc/passwd
 # Incluye también usuarios del grupo suplementario.
 IFS=',' read -r -a members_arr <<< "$group_members"
 for user in "${members_arr[@]}"; do
-    [ -n "$user" ] && users["$user"]=1
+    [[ -n "$user" ]] && users["$user"]=1
 done
 
 {

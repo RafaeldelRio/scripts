@@ -17,8 +17,6 @@ Recibirá como parámetro el curso actual y admitirá además las siguientes opc
 
 FIN
 
-set -euo pipefail
-
 # Ayuda básica de uso.
 usage() {
     echo "Uso: $0 CURSO {-f|-c|-b}" >&2

@@ -11,7 +11,6 @@ de manera que:
 - Además, si se añade el argumento --no-password, no se pide contraseña y el usuario se crea con la contraseña deshabilitada.
 FIN
 
-set -euo pipefail
 
 # Ayuda de uso en caso de parámetros incorrectos.
 usage() {

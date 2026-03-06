@@ -21,7 +21,6 @@ Los creadores del programa maravil necesitan un script de instalación, llamado 
 
 FIN
 
-set -euo pipefail
 
 # 1) Pantalla de bienvenida y espera de confirmación.
 cat bienvenida.txt

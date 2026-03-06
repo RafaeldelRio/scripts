@@ -38,7 +38,6 @@ Nota: Haga el programa para manipular usuarios locales, pero escriba el programa
     sea fácil cambiar a otro tipo de usuarios.
 FIN
 
-set -euo pipefail
 
 # Muestra uso correcto del script.
 usage() {

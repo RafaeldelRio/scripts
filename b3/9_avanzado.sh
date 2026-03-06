@@ -12,8 +12,6 @@ base muy fácilmente. Sin embargo, esta orden no tiene por qué estar disponible
 En debian no forma parte de la instalación mínima y busybox no tiene la implementada.
 FIN
 
-set -euo pipefail
-
 # Convierte IPv4 decimal punteada a entero de 32 bits.
 ip_to_int() {
 	local IFS='.'
