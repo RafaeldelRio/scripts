@@ -12,14 +12,6 @@ La contraseña si lo estará.
 Si se escribe cualquier otro argumento el programa debe fallar devolviendo un 2 al sistema.
 FIN
 
-# -----------------------------------------------------------------------------
-# RESUMEN DE LO QUE HACE ESTE SCRIPT
-# -----------------------------------------------------------------------------
-# Este script amplía el ejercicio 1:
-# - Si se ejecuta sin argumentos, guarda la contraseña tal cual se escribió.
-# - Si se ejecuta con argumento `c`, cifra la contraseña antes de guardarla.
-# - Si se usa cualquier otro argumento, termina con error 2.
-
 # Nombre del fichero donde se almacenarán las credenciales.
 FICHERO="claves"
 
