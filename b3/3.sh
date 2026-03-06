@@ -24,27 +24,24 @@ validar_argumentos() {
 }
 
 obtener_datos_y_validar() {
-    while [[ -z "$usuario" ]]; do
-        read -r -p "Nombre de usuario: " usuario
-        if [[ -z "$usuario" ]]; then
-            echo "El nombre de usuario no puede estar vacío. Inténtelo de nuevo."
-        fi
-    done
+    read -r -p "Nombre de usuario: " usuario
+    if [[ -z "$usuario" ]]; then
+        echo "El nombre de usuario no puede estar vacío."
+        exit 1
+    fi
 
-    while [[ -z "$password" || -z "$password2" ]]; do
-        read -r -s -p "Contraseña: " password
-        echo
-        read -r -s -p "Repita la contraseña: " password2
-        echo
-        
-        if [[ -z "$password" || -z "$password2" ]]; then
-            echo "La contraseña no puede estar vacía. Inténtelo de nuevo."
-        elif [[ "$password" != "$password2" ]]; then
-            echo "Las contraseñas no coinciden. Inténtelo de nuevo."
-            password=""
-            password2=""
-        fi
-    done
+    read -r -s -p "Contraseña: " password
+    echo
+    read -r -s -p "Repita la contraseña: " password2
+    echo
+
+    if [[ -z "$password" || -z "$password2" ]]; then
+        echo "La contraseña no puede estar vacía."
+        exit 1
+    elif [[ "$password" != "$password2" ]]; then
+        echo "Las contraseñas no coinciden."
+        exit 1
+    fi
 }
 
 
