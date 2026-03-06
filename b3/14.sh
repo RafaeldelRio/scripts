@@ -22,7 +22,7 @@ usage() {
     echo "Uso: $0 CURSO {-f|-c|-b}" >&2
 }
 
-if [ "$#" -ne 2 ]; then
+if [[ "$#" -ne 2 ]]; then
     usage
     exit 2
 fi
@@ -30,11 +30,11 @@ fi
 curso="$1"
 opcion="$2"
 grupos_file="grupos_${curso}.txt"
-base_home="/srv/practicas/${curso}"
+base_home="$HOME/proyecto/scripts/b3/14/${curso}"
 
 # Operaciones de cuentas/grupos requieren root.
-require_root() {
-    if [ "$EUID" -ne 0 ]; then
+soy_root() {
+    if (($(id -u) != 0 )); then
         echo "Error: esta operación requiere root." >&2
         exit 1
     fi
@@ -43,7 +43,7 @@ require_root() {
 # -f: genera fichero de grupos del curso con formato claveGrupo:numeroAlumnos.
 create_group_file() {
     read -r -p "Número de grupos a registrar: " num_grupos
-    if ! [[ "$num_grupos" =~ ^[0-9]+$ ]] || [ "$num_grupos" -le 0 ]; then
+    if ! [[ "$num_grupos" =~ ^[0-9]+$ ]] || [[ "$num_grupos" -le 0 ]]; then
         echo "Número de grupos no válido." >&2
         exit 1
     fi
@@ -53,7 +53,7 @@ create_group_file() {
         read -r -p "Clave del grupo #$i: " clave
         read -r -p "Número de alumnos de $clave: " alumnos
 
-        if [ -z "$clave" ] || ! [[ "$alumnos" =~ ^[0-9]+$ ]]; then
+        if [[ -z "$clave" ]] || ! [[ "$alumnos" =~ ^[0-9]+$ ]]; then
             echo "Datos inválidos para el grupo #$i." >&2
             exit 1
         fi
@@ -66,7 +66,7 @@ create_group_file() {
 
 # -c: crea grupos y usuarios; organiza homes por grupo para maximizar privacidad.
 create_accounts() {
-    require_root
+    soy_root
     if [ ! -f "$grupos_file" ]; then
         echo "Error: no existe $grupos_file. Ejecute antes con -f." >&2
         exit 1
@@ -106,7 +106,7 @@ create_accounts() {
 
 # -b: elimina usuarios, grupos y directorios generados para ese curso.
 delete_accounts() {
-    require_root
+    soy_root
     if [ ! -f "$grupos_file" ]; then
         echo "Error: no existe $grupos_file." >&2
         exit 1
