@@ -1,0 +1,13 @@
+MIT LICENSE
+
+Copyright (c) 2026 Rafael
+
+Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia
+de este software y los archivos de documentación asociados (el "Software"), para
+usar el Software sin restricción, incluyendo sin limitación los derechos de usar,
+copiar, modificar, fusionar, publicar, distribuir, sublicenciar, y/o vender copias
+del Software, siempre que se incluya el aviso de copyright anterior y este aviso
+de permiso en todas las copias o partes sustanciales del Software.
+
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO.
+
