@@ -18,7 +18,7 @@ fichero con la siguiente pinta:
 - Nombre Real3;DNI3;2
 
 donde aparece los alumnos actualmente matriculados y «1» significa que el alumno sólo cursa
-primero, «2» que sólo cursa segundo y «1+ que está entre primero y segundo. El nick del
+primero, «2» que sólo cursa segundo y «1+» que está entre primero y segundo. El nick del
 alumno en el sistema se obtiene tomando la inicial de su primer nombre, las tres letras iniciales
 de los dos apellidos y las tres últimas cifras del DNI (p.e. Manuel Jesús Vázquez Montalbán pasa
 a mvazmonNNN).
