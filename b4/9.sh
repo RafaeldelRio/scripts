@@ -21,7 +21,6 @@ Opción y comportamiento
 -h o --help: Muestra un mensaje de ayuda al usuario explicando los posibles parámetros y termina la ejecución sin mostrar ninguna opción de los posibles parámetros.
 FIN
 
-#!/bin/bash
 
 # 1. Comprobamos primero si se ha introducido la opción de ayuda (-h o --help)
 # Se comprueba antes para evitar el error de "fichero no válido" si solo se pide ayuda
