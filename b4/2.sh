@@ -17,20 +17,42 @@ El script deberá tener en cuenta todos los posibles fallos, para que no se mues
 mensaje que no esté generado por el propio script.
 FIN
 
+imprimir_informe() {
+    echo "USUARIO: $u"
+    echo "**********************************************************"
+    echo "PROCESOS EN EJECUCIÓN USUARIO: $num_procesos"
+    echo "PROCESO MÁS ANTIGUO DEL USUARIO: $proceso_antiguo"
+    echo "**********************************************************"
+    # Si el listado de procesos existe (distinto de cero)
+    if [[ -n "$lista_procesos" ]]; then
+        echo "$lista_procesos"
+    fi
+    echo ""
+    echo "**********************************************************"
+    echo "DIRECTORIOS DEL USUARIO: $num_directorios"
+    echo "FICHEROS REGULARES DEL USUARIO: $num_ficheros"
+    echo "TAMAÑO TOTAL FICHEROS USUARIO: $tamano_bytes B"
+    echo "USO DE DISCO DURO USUARIO: $porcentaje%"
+    echo "**********************************************************"
+    echo ""
+}
+
 # Función principal que genera el informe para un usuario concreto
 generar_informe() {
-    local u=$1
+    # Cogemos el parámetro 1 (por si se hubiera indicado el usuario concreto)
+    u=$1
 
     # Comprobamos de forma silenciosa si el usuario existe en el sistema
-    if ! id "$u" >/dev/null 2>&1; then
+    if ! id "$u" &>/dev/null; then
         return
     fi
 
     # 1. Obtener número de procesos en ejecución
+    # Filtramos por usuario para ejecutar el script y por permisos del usuario que ejecuta el script
     num_procesos=$(ps -U "$u" -u "$u" --no-headers 2>/dev/null | wc -l)
 
     # 2. Obtener proceso más antiguo y lista completa
-    if [ "$num_procesos" -eq 0 ]; then
+    if [[ "$num_procesos" -eq 0 ]]; then
         proceso_antiguo="Ninguno"
         lista_procesos=""
     else
@@ -46,36 +68,45 @@ generar_informe() {
     num_ficheros=$(find / -user "$u" -type f 2>/dev/null | wc -l)
 
     # 5. Calcular tamaño total en bytes de esos ficheros
-    # Usamos -printf "%s\n" para sacar el tamaño en bytes de cada fichero y lo sumamos con awk
-    tamano_bytes=$(find / -user "$u" -type f -printf "%s\n" 2>/dev/null | awk '{s+=$1} END {print s+0}')
+    tamano_bytes=$(tamanyo_bytes_ficheros)
 
     # 6. Calcular el tamaño total del disco (partición raíz en bytes) para sacar el porcentaje
-    total_disco=$(df -B1 / 2>/dev/null | awk 'NR==2 {print $2}')
+    total_disco=$(df -B1 / 2>/dev/null | obtener_total_disco)
 
-    if [ -n "$total_disco" ] && [ "$total_disco" -gt 0 ] 2>/dev/null; then
+    if [[ -n "$total_disco" ]] && [[ "$total_disco" -gt 0 ]]; then
         porcentaje=$(awk "BEGIN {printf \"%.2f\", ($tamano_bytes / $total_disco) * 100}")
     else
         porcentaje="0.00"
     fi
 
-    # 7. Imprimir el informe con la estructura exacta requerida
-    echo "USUARIO: $u"
-    echo "**********************************************************"
-    echo "PROCESOS EN EJECUCIÓN USUARIO: $num_procesos"
-    echo "PROCESO MÁS ANTIGUO DEL USUARIO: $proceso_antiguo"
-    echo "**********************************************************"
-    if [ -n "$lista_procesos" ]; then
-        echo "$lista_procesos"
-    fi
-    echo ""
-    echo "**********************************************************"
-    echo "DIRECTORIOS DEL USUARIO: $num_directorios"
-    echo "FICHEROS REGULARES DEL USUARIO: $num_ficheros"
-    echo "TAMAÑO TOTAL FICHEROS USUARIO: $tamano_bytes B"
-    echo "USO DE DISCO DURO USUARIO: $porcentaje%"
-    echo "**********************************************************"
-    echo ""
+    imprimir_informe
 }
+
+tamanyo_bytes_ficheros() {
+    # 1. Creamos la lista de tamaños primero
+    lista_de_tamanyos=$(find / -user "$u" -type f -printf "%s\n" 2>/dev/null)
+
+    # 2. Inicializamos el acumulador
+    total=0
+
+    # 3. El bucle "for-each" tradicional
+    for tamano in $lista_de_tamanyos; do
+        total=$((total + tamano))
+    done
+
+    echo $total
+}
+
+obtener_total_disco() {
+    local cabecera
+    local sistema total usados libres porcentaje punto_montaje
+
+    read -r cabecera
+    read -r sistema total usados libres porcentaje punto_montaje
+
+    echo "$total"
+}
+
 
 # Lógica de gestión de los parámetros
 case "$1" in
@@ -88,7 +119,7 @@ case "$1" in
         ;;
     -u)
         # Si se pasa un segundo parámetro, es el usuario específico
-        if [ -n "$2" ]; then
+        if [[ -n "$2" ]]; then
             generar_informe "$2"
         else
             # Si no se pone usuario tras la -u, se realiza para el usuario actual
