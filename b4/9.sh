@@ -21,72 +21,92 @@ Opción y comportamiento
 -h o --help: Muestra un mensaje de ayuda al usuario explicando los posibles parámetros y termina la ejecución sin mostrar ninguna opción de los posibles parámetros.
 FIN
 
+mostrar_ayuda() {
+    echo "Uso: $0 [opciones] <fichero_o_directorio>"
+    echo "Opciones permitidas:"
+    echo "  -l, --legible      Indica si es legible"
+    echo "  -m, --modificable  Indica si es modificable"
+    echo "  -x, --ejecutable   Indica si es ejecutable"
+    echo "  -h, --help         Muestra este mensaje de ayuda"
+}
 
 # 1. Comprobamos primero si se ha introducido la opción de ayuda (-h o --help)
 # Se comprueba antes para evitar el error de "fichero no válido" si solo se pide ayuda
-for arg in "$@"; do
-    if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
-        echo "Uso: $0 [opciones] <fichero_o_directorio>"
-        echo "Opciones permitidas:"
-        echo "  -l, --legible      Indica si es legible"
-        echo "  -m, --modificable  Indica si es modificable"
-        echo "  -x, --ejecutable   Indica si es ejecutable"
-        echo "  -h, --help         Muestra este mensaje de ayuda"
+for argumento in "$@"; do
+    if [[ "$argumento" == "-h" || "$argumento" == "--help" ]]; then
+        mostrar_ayuda
         exit 0
     fi
 done
 
-# 2. Obtenemos el último parámetro introducido usando la expansión de bash ${!#}
-ultimo_param="${!#}"
-
-# 3. Comprobamos si el último parámetro es un fichero o directorio válido (-e comprueba si existe)
-if [ ! -e "$ultimo_param" ]; then
+# 2. Si no se ha introducido ningún parámetro, el último parámetro no puede ser válido
+# En ese caso se cumple exactamente lo que dice el enunciado:
+# mostrar el mensaje de error y salir con código 1.
+if [[ "$#" -eq 0 ]]; then
     echo "Fichero o directorio no válido"
     exit 1
 fi
 
-# 4. Solicitamos el nombre de usuario de forma oculta (-s)
-read -s -p "Introduzca un nombre de usuario: " usuario
-echo "" # Añadimos un salto de línea manualmente ya que read -s lo suprime
+# 3. Obtenemos el último parámetro introducido usando la expansión de bash ${!#}
+# Ese último parámetro debe ser la ruta sobre la que se harán las comprobaciones.
+ruta_objetivo="${!#}"
 
-# 5. Comprobamos si el usuario introducido es válido en el sistema
+# 4. Comprobamos si el último parámetro es realmente un fichero o un directorio
+# No usamos -e porque el enunciado habla específicamente de fichero o directorio.
+if [[ ! -f "$ruta_objetivo" ]] && [[ ! -d "$ruta_objetivo" ]]; then
+    echo "Fichero o directorio no válido"
+    exit 1
+fi
+
+# 5. Solicitamos el nombre de usuario de forma oculta (-s)
+# El nombre no se muestra por pantalla, como si fuese una contraseña.
+read -r -s -p "Introduzca un nombre de usuario: " usuario
+printf '\n'
+
+# 6. Comprobamos si el usuario introducido es válido en el sistema
 # Se verifica que no esté vacío y que el comando 'id' lo reconozca (enviando errores a /dev/null)
-if [ -z "$usuario" ] || ! id "$usuario" >/dev/null 2>&1; then
+if [[ -z "$usuario" ]] || ! id "$usuario" >/dev/null 2>&1; then
     echo "No tiene acceso a este script"
     exit 2
 fi
 
-# 6. Procesamos las opciones (iteramos por todos los parámetros excepto el último)
-num_params=$#
-for (( i=1; i<num_params; i++ )); do
-    # Extraemos el valor del parámetro en la posición i
-    opcion="${!i}"
+# 7. Procesamos las opciones.
+# Solo se recorren los parámetros anteriores al último, porque el último es la ruta objetivo.
+parametros=("$@")
+ultima_posicion=$((${#parametros[@]} - 1))
 
-    case "$opcion" in
+for (( i=0; i<ultima_posicion; i++ )); do
+    opcion_actual="${parametros[i]}"
+
+    case "$opcion_actual" in
         -l|--legible)
-            if [ -r "$ultimo_param" ]; then
+            # `-r` comprueba si la ruta es legible para el usuario que ejecuta el script.
+            if [[ -r "$ruta_objetivo" ]]; then
                 echo "es legible"
             else
                 echo "no legible"
             fi
             ;;
         -m|--modificable)
-            if [ -w "$ultimo_param" ]; then
+            # `-w` comprueba si la ruta es modificable.
+            if [[ -w "$ruta_objetivo" ]]; then
                 echo "es modificable"
             else
                 echo "no modificable"
             fi
             ;;
         -x|--ejecutable)
-            if [ -x "$ultimo_param" ]; then
+            # `-x` comprueba si la ruta es ejecutable.
+            if [[ -x "$ruta_objetivo" ]]; then
                 echo "es ejecutable"
             else
-                echo "no es ejecutable"
+                echo "no ejecutable"
             fi
             ;;
         *)
-            # Si se encuentra una opción no contemplada en la tabla
-            echo "Parámetro erróneo: $opcion"
+            # Si se encuentra una opción no contemplada en la tabla,
+            # se informa de cuál es y se termina con código 3.
+            echo "Parámetro erróneo: $opcion_actual"
             exit 3
             ;;
     esac
