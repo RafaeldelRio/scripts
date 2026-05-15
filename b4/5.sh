@@ -194,17 +194,31 @@ analizar_ficheros_propios() {
 obtener_tipo_mas_usual() {
     local lista_ficheros="$1"
     local tipo_mas_usual
+    local ruta
+    local tipo_actual
+    local cantidad_maxima=0
+    local -A contador_tipos=()
 
     # Para que el informe no se quede bloqueado con miles de ficheros,
     # se toma una muestra de los primeros 200.
-    tipo_mas_usual=$(awk -F'\t' 'NR <= 200 {print $3}' "$lista_ficheros" \
-        | tr '\n' '\0' \
-        | xargs -0 -r file -b 2>/dev/null \
-        | sort \
-        | uniq -c \
-        | sort -nr \
-        | head -n 1 \
-        | sed 's/^ *[0-9]\+ //')
+    # Recorremos esa muestra línea a línea, detectamos el tipo de cada fichero
+    # y contamos cuántas veces aparece cada tipo.
+    while IFS=$'\t' read -r _ _ ruta; do
+        [[ -z "$ruta" ]] && continue
+
+        tipo_actual=$(file -b "$ruta" 2>/dev/null)
+        [[ -z "$tipo_actual" ]] && continue
+
+        ((contador_tipos["$tipo_actual"]++))
+    done < <(head -n 200 "$lista_ficheros")
+
+    # Buscamos el tipo que más veces se repite.
+    for tipo_actual in "${!contador_tipos[@]}"; do
+        if (( contador_tipos["$tipo_actual"] > cantidad_maxima )); then
+            cantidad_maxima=${contador_tipos["$tipo_actual"]}
+            tipo_mas_usual="$tipo_actual"
+        fi
+    done
 
     # Si no se pudo detectar ningún tipo, devolvemos "Ninguno".
     if [[ -z "$tipo_mas_usual" ]]; then
