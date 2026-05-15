@@ -3,7 +3,7 @@
 : <<"FIN"
 EJERCICIO 1.
 Realizar un shell script llamado copiaSeguridad.sh para automatizar
-las copias de seguridad de las cuentas de usuario (UID>1000) de un servidor.
+las copias de seguridad de las cuentas de usuario (UID>=1000) de un servidor.
 El script debe admitir dos parámetros obligatorios acción y directorio, es decir:
     ./copiaSeguridad.sh acción directorio
 acción será -c (para crear la copia de seguridad en el directorio) o
@@ -30,113 +30,321 @@ ningún mensaje que no esté generado por el script
 (no existe directorio, no existe permisos...)
 FIN
 
-# Comprobar que el script se ejecuta como root (EUID 0)
-if [ "$EUID" -ne 0 ]; then
-    echo "Error: Este script debe ejecutarse con privilegios de administrador (root)."
-    exit 1
-fi
+# Este script se ha organizado en funciones pequeñas y con nombres descriptivos.
+# La idea es que cada función tenga una única responsabilidad:
+#   - validar datos de entrada
+#   - leer información del sistema
+#   - crear la copia de seguridad
+#   - restaurar la copia guardada
+# Así el flujo principal queda muy claro al final del archivo.
 
-# Comprobar el número de parámetros (tienen que ser exactamente 2)
-if [ "$#" -ne 2 ]; then
-    echo "Error: Parámetros incorrectos."
+# Muestra la sintaxis correcta del script.
+mostrar_uso() {
     echo "Uso: $0 <-c|-r> <directorio>"
+}
+
+
+# Centralizamos aquí la salida por error para no repetir código.
+# Siempre mostramos mensajes propios del script, tal y como pide el enunciado.
+salir_con_error() {
+    echo "Error: $1"
     exit 1
-fi
+}
 
-ACCION=$1
-DIR=$2
 
-if [ "$ACCION" = "-c" ]; then
-    # --- CREAR COPIA DE SEGURIDAD ---
+# Para leer /etc/shadow y modificar cuentas de usuario necesitamos privilegios de
+# administración. Si no somos root, paramos inmediatamente.
+comprobar_root() {
+    if (( "$EUID" != 0 )); then
+        salir_con_error "Este script debe ejecutarse con privilegios de administrador (root)."
+    fi
+}
 
-    # Si el directorio no existe, intentamos crearlo de forma silenciosa
-    if [ ! -d "$DIR" ]; then
-        mkdir -p "$DIR" 2>/dev/null
-        if [ "$?" -ne 0 ]; then
-            echo "Error: No se pudo crear el directorio '$DIR'."
-            exit 1
+
+# Validamos que existan exactamente dos parámetros: acción y directorio.
+comprobar_parametros() {
+    if (( "$#" != 2 )); then
+        echo "Error: Parámetros incorrectos."
+        mostrar_uso
+        exit 1
+    fi
+}
+
+
+# Decide si un usuario del sistema debe formar parte de la copia de seguridad.
+# En este script se considera usuario normal a quien tiene UID >= 1000.
+# Además se excluye la cuenta nobody (UID 65534), que no es una cuenta humana.
+es_usuario_a_copiar() {
+    local uid="$1"
+
+    if (( "$uid" >= 1000 )) && (( "$uid" != 65534 )); then
+        return 0
+    fi
+
+    return 1
+}
+
+
+# Si el directorio de destino no existe, intentamos crearlo.
+# Si existe pero no se puede escribir en él, abortamos.
+preparar_directorio_para_copia() {
+    local directorio="$1"
+
+    if [[ ! -d "$directorio" ]]; then
+        mkdir -p "$directorio" 2>/dev/null
+        if (( "$?" != 0 )); then
+            salir_con_error "No se pudo crear el directorio '$directorio'."
         fi
     fi
 
-    # Comprobar que tenemos permisos de escritura en el directorio
-    if [ ! -w "$DIR" ]; then
-        echo "Error: No hay permisos de escritura en el directorio '$DIR'."
-        exit 1
+    if [[ ! -w "$directorio" ]]; then
+        salir_con_error "No hay permisos de escritura en el directorio '$directorio'."
+    fi
+}
+
+
+# Para restaurar necesitamos al menos que el directorio exista, pueda leerse y
+# contenga el fichero principal llamado "usuarios".
+comprobar_directorio_de_restauracion() {
+    local directorio="$1"
+
+    if [[ ! -d "$directorio" ]]; then
+        salir_con_error "El directorio '$directorio' no existe."
     fi
 
-    # Limpiar o crear el archivo "usuarios" vacío
-    > "$DIR/usuarios" 2>/dev/null
-    if [ "$?" -ne 0 ]; then
-         echo "Error: No se puede escribir el archivo 'usuarios' en '$DIR'."
-         exit 1
+    if [[ ! -r "$directorio" ]]; then
+        salir_con_error "No hay permisos de lectura sobre el directorio '$directorio'."
     fi
 
-    # Filtrar usuarios con UID >= 1000 (excluyendo "nobody" que suele ser 65534)
-    # Nota: Usamos >= 1000 porque en Linux el primer usuario estándar es el 1000.
-    awk -F: '$3 >= 1000 && $3 != 65534 {print $1":"$5":"$6":"$7}' /etc/passwd 2>/dev/null | while IFS=: read -r user gecos home shell; do
+    if [[ ! -f "$directorio/usuarios" ]]; then
+        salir_con_error "No se encuentra el fichero 'usuarios' dentro de '$directorio'."
+    fi
 
-        # Extraer la clave encriptada de /etc/shadow
-        enc_pass=$(awk -v u="$user" -F: '$1 == u {print $2}' /etc/shadow 2>/dev/null)
+    if [[ ! -r "$directorio/usuarios" ]]; then
+        salir_con_error "No se puede leer el fichero 'usuarios' dentro de '$directorio'."
+    fi
+}
 
-        # Escribir la línea estructurada en el fichero
-        echo "$user;$gecos;$enc_pass;$home;$shell" >> "$DIR/usuarios" 2>/dev/null
 
-        # Empaquetar el directorio de trabajo del usuario
-        if [ -d "$home" ]; then
-            # Quitamos la barra inicial (/) de la ruta para empaquetarlo de forma segura
-            home_relativo="${home#/}"
-            # Se usa -C / para posicionarse en la raíz y empaquetar "home/usuario"
-            tar -czf "$DIR/${user}.tgz" -C / "$home_relativo" 2>/dev/null
+# Creamos o vaciamos el fichero de índice llamado "usuarios".
+# Ese fichero es la base de la restauración posterior.
+inicializar_fichero_usuarios() {
+    local directorio="$1"
+
+    : > "$directorio/usuarios" 2>/dev/null
+    if (( "$?" != 0 )); then
+        salir_con_error "No se puede escribir el archivo 'usuarios' en '$directorio'."
+    fi
+}
+
+
+# Busca la clave cifrada de un usuario recorriendo /etc/shadow línea a línea.
+# No usamos awk para que el proceso sea más explícito y fácil de seguir.
+obtener_clave_encriptada() {
+    local usuario_buscado="$1"
+    local usuario_shadow=""
+    local clave_shadow=""
+
+    while IFS=: read -r usuario_shadow clave_shadow _; do
+        if [[ "$usuario_shadow" = "$usuario_buscado" ]]; then
+            echo "$clave_shadow"
+            return 0
         fi
+    done < /etc/shadow
 
-    done
+    return 1
+}
 
-    echo "Copia de seguridad creada correctamente en '$DIR'."
 
-elif [ "$ACCION" = "-r" ]; then
-    # --- RESTAURAR COPIA DE SEGURIDAD ---
+# Guarda una línea en el fichero "usuarios" con el formato pedido:
+# usuario;nombre_completo;clave_encriptada;home;shell
+escribir_registro_de_usuario() {
+    local directorio="$1"
+    local usuario="$2"
+    local nombre_completo="$3"
+    local clave_encriptada="$4"
+    local home="$5"
+    local shell="$6"
 
-    # Comprobar que el directorio existe y tiene permisos de lectura
-    if [ ! -d "$DIR" ] || [ ! -r "$DIR" ]; then
-        echo "Error: El directorio '$DIR' no existe o no tiene permisos de lectura."
-        exit 1
+    printf '%s;%s;%s;%s;%s\n' \
+        "$usuario" \
+        "$nombre_completo" \
+        "$clave_encriptada" \
+        "$home" \
+        "$shell" >> "$directorio/usuarios" 2>/dev/null
+
+    if (( "$?" != 0 )); then
+        salir_con_error "No se pudo escribir la información del usuario '$usuario' en '$directorio/usuarios'."
+    fi
+}
+
+
+# Crea el archivo comprimido de un usuario a partir de su directorio personal.
+# Usamos tar desde / para guardar la ruta completa relativa, por ejemplo:
+#   /home/manolo  ->  home/manolo
+crear_tgz_del_home() {
+    local directorio="$1"
+    local usuario="$2"
+    local home="$3"
+    local home_relativo=""
+
+    if [[ ! -d "$home" ]]; then
+        salir_con_error "El directorio personal '$home' del usuario '$usuario' no existe."
     fi
 
-    # Comprobar que existe el archivo de usuarios base
-    if [ ! -f "$DIR/usuarios" ]; then
-        echo "Error: No se encuentra el fichero 'usuarios' dentro de '$DIR'."
-        exit 1
+    home_relativo="${home#/}"
+
+    tar -czf "$directorio/${usuario}.tgz" -C / "$home_relativo" 2>/dev/null
+    if (( "$?" != 0 )); then
+        salir_con_error "No se pudo crear la copia del directorio personal del usuario '$usuario'."
     fi
+}
 
-    # Leer línea por línea el archivo de usuarios y restaurar
-    while IFS=';' read -r user gecos enc_pass home shell; do
 
-        # Evitar procesar líneas vacías si las hubiera
-        if [ -z "$user" ]; then
+# Recorre /etc/passwd y procesa únicamente los usuarios normales.
+# Cada línea de /etc/passwd tiene esta forma:
+#   usuario:x:uid:gid:gecos:home:shell
+crear_copia_de_seguridad() {
+    local directorio="$1"
+    local usuario=""
+    local uid=""
+    local gecos=""
+    local home=""
+    local shell=""
+    local clave_encriptada=""
+    local usuarios_copiados=0
+
+    preparar_directorio_para_copia "$directorio"
+    inicializar_fichero_usuarios "$directorio"
+
+    while IFS=: read -r usuario _ uid _ gecos home shell; do
+        if ! es_usuario_a_copiar "$uid"; then
             continue
         fi
 
-        # Comprobar si el usuario ya existe en el sistema
-        if id "$user" >/dev/null 2>&1; then
-            # Si existe, se actualizan sus propiedades
-            usermod -c "$gecos" -d "$home" -s "$shell" -p "$enc_pass" "$user" 2>/dev/null
-        else
-            # Si no existe, se crea el usuario con su clave encriptada
-            useradd -m -c "$gecos" -d "$home" -s "$shell" -p "$enc_pass" "$user" 2>/dev/null
+        clave_encriptada=$(obtener_clave_encriptada "$usuario")
+        if (( "$?" != 0 )); then
+            salir_con_error "No se pudo obtener la clave encriptada del usuario '$usuario'."
         fi
 
-        # Descomprimir su directorio home de vuelta a su ubicación original
-        if [ -f "$DIR/${user}.tgz" ]; then
-            tar -xzf "$DIR/${user}.tgz" -C / 2>/dev/null
+        escribir_registro_de_usuario "$directorio" "$usuario" "$gecos" "$clave_encriptada" "$home" "$shell"
+        crear_tgz_del_home "$directorio" "$usuario" "$home"
+
+        usuarios_copiados=$((usuarios_copiados + 1))
+    done < /etc/passwd
+
+    echo "Copia de seguridad creada correctamente en '$directorio'. Usuarios copiados: $usuarios_copiados."
+}
+
+
+# Comprueba si una cuenta existe ya en el sistema.
+# Redirigimos la salida porque solo queremos usar el código de retorno.
+existe_usuario() {
+    local usuario="$1"
+
+    id "$usuario" >/dev/null 2>&1
+}
+
+
+# Si el usuario ya existe, actualizamos sus datos básicos.
+# Si no existe, lo creamos con la información guardada en la copia.
+crear_o_actualizar_usuario() {
+    local usuario="$1"
+    local nombre_completo="$2"
+    local clave_encriptada="$3"
+    local home="$4"
+    local shell="$5"
+
+    if existe_usuario "$usuario"; then
+        usermod -c "$nombre_completo" -d "$home" -s "$shell" -p "$clave_encriptada" "$usuario" 2>/dev/null
+        if (( "$?" != 0 )); then
+            salir_con_error "No se pudo actualizar el usuario '$usuario'."
+        fi
+    else
+        useradd -m -c "$nombre_completo" -d "$home" -s "$shell" -p "$clave_encriptada" "$usuario" 2>/dev/null
+        if (( "$?" != 0 )); then
+            salir_con_error "No se pudo crear el usuario '$usuario'."
+        fi
+    fi
+}
+
+
+# Recupera el contenido del directorio personal guardado en el .tgz del usuario.
+restaurar_home_de_usuario() {
+    local directorio="$1"
+    local usuario="$2"
+    local home="$3"
+    local grupo_principal=""
+
+    if [ ! -f "$directorio/${usuario}.tgz" ]; then
+        salir_con_error "No se encuentra el fichero '$directorio/${usuario}.tgz'."
+    fi
+
+    tar -xzf "$directorio/${usuario}.tgz" -C / 2>/dev/null
+    if (( "$?" != 0 )); then
+        salir_con_error "No se pudo restaurar el directorio personal del usuario '$usuario'."
+    fi
+
+    if [[ -d "$home" ]]; then
+        grupo_principal=$(id -gn "$usuario" 2>/dev/null)
+        if [[ -z "$grupo_principal" ]]; then
+            salir_con_error "No se pudo averiguar el grupo principal del usuario '$usuario'."
         fi
 
-    done < "$DIR/usuarios"
+        chown -R "$usuario:$grupo_principal" "$home" 2>/dev/null
+        if (( "$?" != 0 )); then
+            salir_con_error "No se pudieron ajustar los permisos del directorio personal de '$usuario'."
+        fi
+    fi
+}
 
-    echo "Sistema restaurado correctamente desde la copia en '$DIR'."
 
-else
-    # Error de parámetro de acción
-    echo "Error: La acción '$ACCION' no es válida."
-    echo "Uso: $0 <-c|-r> <directorio>"
-    exit 1
-fi
+# Lee el fichero "usuarios" de la copia y reconstruye las cuentas del sistema.
+restaurar_copia_de_seguridad() {
+    local directorio="$1"
+    local usuario=""
+    local nombre_completo=""
+    local clave_encriptada=""
+    local home=""
+    local shell=""
+    local usuarios_restaurados=0
+
+    comprobar_directorio_de_restauracion "$directorio"
+
+    while IFS=';' read -r usuario nombre_completo clave_encriptada home shell; do
+        if [ -z "$usuario" ]; then
+            continue
+        fi
+
+        crear_o_actualizar_usuario "$usuario" "$nombre_completo" "$clave_encriptada" "$home" "$shell"
+        restaurar_home_de_usuario "$directorio" "$usuario" "$home"
+
+        usuarios_restaurados=$((usuarios_restaurados + 1))
+    done < "$directorio/usuarios"
+
+    echo "Sistema restaurado correctamente desde la copia en '$directorio'. Usuarios restaurados: $usuarios_restaurados."
+}
+
+
+# -----------------------------------------------------------------------------
+# Programa principal
+
+comprobar_root
+comprobar_parametros "$@"
+
+ACCION="$1"
+DIR="$2"
+
+case "$ACCION" in
+    -c)
+        crear_copia_de_seguridad "$DIR"
+        ;;
+    -r)
+        restaurar_copia_de_seguridad "$DIR"
+        ;;
+    *)
+        echo "Error: La acción '$ACCION' no es válida."
+        mostrar_uso
+        exit 1
+        ;;
+esac
