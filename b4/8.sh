@@ -127,17 +127,22 @@ generar_logins() {
 
 obtener_ip_base() {
     local ip="$1"
+    # Para obtener la parte fija de la IP, podemos usar la expansión de parámetros para eliminar el último número.
+    # Es decir, si la IP es 172.22.1.3, entonces ${ip%.*} nos dará "172.22.1".
     echo "${ip%.*}"
 }
 
 obtener_ultimo_octeto() {
     local ip="$1"
+    # Para obtener el último octeto, podemos usar la expansión de parámetros para eliminar todo hasta el último punto.
+    # Es decir, si la IP es 172.22.1.3, entonces ${ip##*.} nos dará "3".
     echo "${ip##*.}"
 }
 
 comprobar_ip() {
     local ip="$1"
 
+    # Usamos ping con -c 1 para enviar un solo paquete y -W 1 para esperar solo 1 segundo por la respuesta.
     if ping -c 1 -W 1 "$ip" > /dev/null 2>&1; then
         echo "$ip está activa"
     else
