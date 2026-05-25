@@ -91,7 +91,9 @@ preparar_directorio_para_copia() {
     local directorio="$1"
 
     if [[ ! -d "$directorio" ]]; then
+        # El -p por si hiciera falta crear algún directorio intermedio.
         mkdir -p "$directorio" 2>/dev/null
+        # $? es el código de retorno del último comando ejecutado. Si no es 0, hubo un error.
         if (( "$?" != 0 )); then
             salir_con_error "No se pudo crear el directorio '$directorio'."
         fi
@@ -131,6 +133,7 @@ comprobar_directorio_de_restauracion() {
 inicializar_fichero_usuarios() {
     local directorio="$1"
 
+    # Crea el fichero vacío o lo vacía si ya existe. Redirigimos la salida de error para controlar el fallo.
     : > "$directorio/usuarios" 2>/dev/null
     if (( "$?" != 0 )); then
         salir_con_error "No se puede escribir el archivo 'usuarios' en '$directorio'."
@@ -145,6 +148,8 @@ obtener_clave_encriptada() {
     local usuario_shadow=""
     local clave_shadow=""
 
+    # Cada línea de /etc/shadow tiene esta forma:
+    #   usuario:clave:cambio:expiracion:aviso:inactividad:reservado
     while IFS=: read -r usuario_shadow clave_shadow _; do
         if [[ "$usuario_shadow" = "$usuario_buscado" ]]; then
             echo "$clave_shadow"
@@ -194,6 +199,7 @@ crear_tgz_del_home() {
 
     home_relativo="${home#/}"
 
+    # El -C / para que tar se sitúe en la raíz y guarde la ruta relativa del home.
     tar -czf "$directorio/${usuario}.tgz" -C / "$home_relativo" 2>/dev/null
     if (( "$?" != 0 )); then
         salir_con_error "No se pudo crear la copia del directorio personal del usuario '$usuario'."
@@ -217,6 +223,7 @@ crear_copia_de_seguridad() {
     preparar_directorio_para_copia "$directorio"
     inicializar_fichero_usuarios "$directorio"
 
+    # Recorremos el fichero /etc/passwd para obtener la información de los usuarios.
     while IFS=: read -r usuario _ uid _ gecos home shell; do
         if ! es_usuario_a_copiar "$uid"; then
             continue
@@ -276,7 +283,7 @@ restaurar_home_de_usuario() {
     local home="$3"
     local grupo_principal=""
 
-    if [ ! -f "$directorio/${usuario}.tgz" ]; then
+    if [[ ! -f "$directorio/${usuario}.tgz" ]]; then
         salir_con_error "No se encuentra el fichero '$directorio/${usuario}.tgz'."
     fi
 
