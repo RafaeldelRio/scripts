@@ -1,0 +1,50 @@
+########################################################################
+Nombre del script: tema8_ej1_v2.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+Autores: maria
+Shell: /bin/bash
+Tema: 8
+Ejercicio: 1
+Posible copia de: ana
+########################################################################
+for n in 1 2 3; do
+    echo "$n"
+done
+
+########################################################################
+Nombre del script: tema8_ej1.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+Autores: ana maria
+Shell: /bin/bash
+Tema: 8
+Ejercicio: 1
+Posible copia de: maria
+########################################################################
+for n in 1 2 3; do
+    echo "$n"
+done
+
+########################################################################
+Nombre del script: tema7_ej3.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+Autores: luis
+Shell: /bin/bash
+Tema: 7
+Ejercicio: 3
+Posible copia de: ana
+########################################################################
+echo "hola"
+echo "practica"
+
+########################################################################
+Nombre del script: tema7_ej3.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+Autores: ana
+Shell: /bin/bash
+Tema: 7
+Ejercicio: 3
+Posible copia de: luis
+########################################################################
+echo "hola"
+echo "practica"
+

@@ -1,0 +1,21 @@
+INFORME FINAL DE AUDITORIA
+Fecha: 2026-06-02 13:03:53
+
+Usuarios validos: 4
+Usuarios rechazados: 3
+
+Distribucion por nivel:
+- admin: 2
+- soporte: 1
+- alumno: 1
+
+Usuarios con carpeta .ssh: 3
+Incidencias de permisos: 1
+Fichero de mayor tamano: /home/rafael/proyecto/scripts/repaso/trabajo/ej1/sim_home/pnavsan321/.ssh/authorized_keys (63 bytes)
+
+Ficheros de salida:
+- Registro: /home/rafael/proyecto/scripts/repaso/salidas/ej1/usuarios_importados.tsv
+- Rechazados: /home/rafael/proyecto/scripts/repaso/salidas/ej1/usuarios_rechazados.tsv
+- Permisos: /home/rafael/proyecto/scripts/repaso/salidas/ej1/permisos_peligrosos.txt
+
+Firma: de9af0f450b06811d3f5e29e8f6bdc17e5e0f03de06d38d00210f3e2727a3630

@@ -1,0 +1,12 @@
+[2026-06-02 13:03:52] [INFO] Entorno de trabajo reiniciado.
+[2026-06-02 13:03:52] [INFO] Usuario importado: lmarort678 (admin)
+[2026-06-02 13:03:52] [INFO] Usuario importado: pnavsan321 (soporte)
+[2026-06-02 13:03:52] [INFO] Usuario importado: idelrui344 (alumno)
+[2026-06-02 13:03:53] [INFO] Usuario importado: lmarort678 (admin)
+[2026-06-02 13:03:53] [WARN] Linea 6 rechazada: clave insegura
+[2026-06-02 13:03:53] [WARN] Linea 7 rechazada: dni invalido
+[2026-06-02 13:03:53] [WARN] Linea 8 rechazada: campos incompletos
+[2026-06-02 13:03:53] [INFO] Importacion completada: 4 validos, 3 rechazados.
+[2026-06-02 13:03:53] [WARN] Analisis de permisos con 1 incidencias.
+[2026-06-02 13:03:53] [WARN] Analisis de permisos con 1 incidencias.
+[2026-06-02 13:03:53] [INFO] Informe final generado.

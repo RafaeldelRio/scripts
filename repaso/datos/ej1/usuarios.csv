@@ -1,0 +1,8 @@
+nombre;apellido1;apellido2;dni;nivel;clave
+Lucia;Martinez;Ortega;12345678Z;admin;ClaveSegura1
+Pablo;Navarro;Sanz;87654321X;soporte;S0porteSeguro
+Ines;Delgado;Ruiz;11223344A;alumno;Alumno2025
+Laura;Martinez;Ortega;99345678C;admin;ClaveSegura9
+Ana;Li;Xu;22334455B;alumno;corta
+Rosa;Serrano;Lopez;ABC;admin;BuenaClave7
+Mario;Vega;;44556677D;soporte;OtraClave8

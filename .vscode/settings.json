@@ -1,0 +1,11 @@
+{
+  "markdown.marp.themes": [
+    "beam.css",
+  ],
+  "markdown.marp.html": "all",
+  "markdown-pdf.headerTemplate": "<div style=\"width:100%; font-size:10px; padding:0 1cm; box-sizing:border-box;\"><div style=\"display:flex; justify-content:space-between; align-items:center; width:100%;\"><span class='title'></span><span>ECOEM: Resumen scripts</span></div><div style=\"margin-top:4px; border-top:1px solid #9ca3af; width:100%;\"></div></div>",
+  "markdown-pdf.footerTemplate": "<div style=\"width:100%; font-size:10px; padding:0 1cm; box-sizing:border-box; display:flex; justify-content:space-between; align-items:center;\"><span>Rafael del Río</span><span><span class='pageNumber'>  </span> / <span class='totalPages'></span></div>",
+  "markdown-pdf.styles": [
+    "pdf.css"
+  ]
+}

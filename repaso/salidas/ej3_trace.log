@@ -1,0 +1,1509 @@
++ set -u
++ set -o pipefail
++++ dirname repaso/03_solucion_copias.sh
+++ cd repaso
+++ pwd
++ SCRIPT_DIR=/home/rafael/proyecto/scripts/repaso
++ PROJECTS_DIR=/home/rafael/proyecto/scripts/repaso/datos/ej3/proyectos
++ SCRIPTS_DIR=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos
++ OUTPUT_DIR=/home/rafael/proyecto/scripts/repaso/salidas/ej3
++ STORE_DIR=/home/rafael/proyecto/scripts/repaso/salidas/ej3/backups
++ RESTORE_DIR=/home/rafael/proyecto/scripts/repaso/salidas/ej3/restaurados
++ LOG_FILE=/home/rafael/proyecto/scripts/repaso/salidas/ej3/gestion_copias.log
++ AUDIT_REPORT=/home/rafael/proyecto/scripts/repaso/salidas/ej3/informe_scripts.txt
++ DEFAULT_KEEP=2
++ BEST_FILE=()
++ declare -A BEST_FILE
++ BEST_TIME=()
++ declare -A BEST_TIME
++ SCRIPT_HASH=()
++ declare -A SCRIPT_HASH
++ SCRIPT_AUTORES=()
++ declare -A SCRIPT_AUTORES
++ SCRIPT_SHELL=()
++ declare -A SCRIPT_SHELL
++ SCRIPT_TEMA=()
++ declare -A SCRIPT_TEMA
++ SCRIPT_EJERCICIO=()
++ declare -A SCRIPT_EJERCICIO
++ DO_BACKUP=false
++ DO_AUDIT=false
++ DO_TREE=false
++ RESTORE_PROJECT=
++ getopts :bar:th option
++ case "$option" in
++ DO_AUDIT=true
++ getopts :bar:th option
++ init_paths
++ mkdir -p /home/rafael/proyecto/scripts/repaso/salidas/ej3/backups /home/rafael/proyecto/scripts/repaso/salidas/ej3/restaurados /home/rafael/proyecto/scripts/repaso/salidas/ej3
++ touch /home/rafael/proyecto/scripts/repaso/salidas/ej3/gestion_copias.log
++ false
++ true
++ false
++ [[ -n '' ]]
++ true
++ audit_scripts
++ local file key selected hash other_file possible_copies authors primary_author candidate
++ selected_files=()
++ local -a selected_files
++ SEEN_SELECTED=()
++ declare -A SEEN_SELECTED
++ :
++ BEST_FILE=()
++ BEST_TIME=()
++ SCRIPT_HASH=()
++ SCRIPT_AUTORES=()
++ SCRIPT_SHELL=()
++ SCRIPT_TEMA=()
++ SCRIPT_EJERCICIO=()
++ IFS=
++ read -r -d '' file
+++ find /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos -type f -name '*.sh' -print0
++ process_script_file /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh shell_name theme exercise authors mtime
+++ script_shell /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local first_line
++++ get_first_line /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++++ IFS=
++++ read -r line
++++ printf %s '#!/bin/bash'
+++ first_line='#!/bin/bash'
+++ [[ #!/bin/bash == \#\!* ]]
+++ printf %s /bin/bash
++ shell_name=/bin/bash
++ [[ -n /bin/bash ]]
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh Tema
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++++ local label=Tema
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=8
++++ printf %s 8
++++ return 0
+++ trim_spaces 8
+++ printf %s 8
+++ tr -d '[:space:]'
++ theme=8
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh Ejercicio
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++++ local label=Ejercicio
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=1
++++ printf %s 1
++++ return 0
+++ trim_spaces 1
+++ printf %s 1
+++ tr -d '[:space:]'
++ exercise=1
+++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh Autores
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local label=Autores
+++ local line value
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ value=maria
+++ printf %s maria
+++ return 0
++ authors=maria
++ [[ -n 8 ]]
++ [[ -n 1 ]]
++ [[ -n maria ]]
+++ stat -c %Y /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++ mtime=1780398284
++ register_script /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh 8 1 maria /bin/bash 1780398284
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh theme=8 exercise=1 authors=maria shell_name=/bin/bash mtime=1780398284 author key
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.J6twjSwn6q
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:maria ]]
+++ printf '%s\n' '#Autores:maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.J6twjSwn6q
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.J6twjSwn6q
++ SCRIPT_HASH["$file"]=74cfea2c21923fc9a2de1a2bc74e1acbb659354e259fc329c51bd73365de1367
++ SCRIPT_AUTORES["$file"]=maria
++ SCRIPT_SHELL["$file"]=/bin/bash
++ SCRIPT_TEMA["$file"]=8
++ SCRIPT_EJERCICIO["$file"]=1
++ for author in $authors
++ key='maria|8|1'
++ [[ -z '' ]]
++ BEST_TIME["$key"]=1780398284
++ BEST_FILE["$key"]=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++ IFS=
++ read -r -d '' file
++ process_script_file /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh shell_name theme exercise authors mtime
+++ script_shell /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
+++ local first_line
++++ get_first_line /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
++++ IFS=
++++ read -r line
++++ printf %s '#!/bin/bash'
+++ first_line='#!/bin/bash'
+++ [[ #!/bin/bash == \#\!* ]]
+++ printf %s /bin/bash
++ shell_name=/bin/bash
++ [[ -n /bin/bash ]]
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh Tema
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
++++ local label=Tema
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ [[ -n echo sin metadatos ]]
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ [[ -n '' ]]
++++ return 1
++++ true
+++ trim_spaces ''
+++ printf %s ''
+++ tr -d '[:space:]'
++ theme=
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh Ejercicio
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
++++ local label=Ejercicio
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ [[ -n echo sin metadatos ]]
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ [[ -n '' ]]
++++ return 1
++++ true
+++ trim_spaces ''
+++ tr -d '[:space:]'
+++ printf %s ''
++ exercise=
+++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh Autores
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
+++ local label=Autores
+++ local line value
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ [[ -n echo sin metadatos ]]
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ return 1
+++ true
++ authors=
++ [[ -n '' ]]
++ return 0
++ IFS=
++ read -r -d '' file
++ process_script_file /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh shell_name theme exercise authors mtime
+++ script_shell /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local first_line
++++ get_first_line /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++++ IFS=
++++ read -r line
++++ printf %s '#!/bin/bash'
+++ first_line='#!/bin/bash'
+++ [[ #!/bin/bash == \#\!* ]]
+++ printf %s /bin/bash
++ shell_name=/bin/bash
++ [[ -n /bin/bash ]]
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh Tema
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++++ local label=Tema
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=7
++++ printf %s 7
++++ return 0
+++ trim_spaces 7
+++ printf %s 7
+++ tr -d '[:space:]'
++ theme=7
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh Ejercicio
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++++ local label=Ejercicio
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=3
++++ printf %s 3
++++ return 0
+++ trim_spaces 3
+++ printf %s 3
+++ tr -d '[:space:]'
++ exercise=3
+++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh Autores
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local label=Autores
+++ local line value
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ value=luis
+++ printf %s luis
+++ return 0
++ authors=luis
++ [[ -n 7 ]]
++ [[ -n 3 ]]
++ [[ -n luis ]]
+++ stat -c %Y /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++ mtime=1780398284
++ register_script /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh 7 3 luis /bin/bash 1780398284
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh theme=7 exercise=3 authors=luis shell_name=/bin/bash mtime=1780398284 author key
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.IAsljKFHZm
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:luis == [[:space:]]*#* ]]
+++ [[ -z #Autores:luis ]]
+++ printf '%s\n' '#Autores:luis'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.IAsljKFHZm
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.IAsljKFHZm
++ SCRIPT_HASH["$file"]=20a4973efdb6d21b4cd1a66253ef6b618e0cb0298d981922f12b535528761a95
++ SCRIPT_AUTORES["$file"]=luis
++ SCRIPT_SHELL["$file"]=/bin/bash
++ SCRIPT_TEMA["$file"]=7
++ SCRIPT_EJERCICIO["$file"]=3
++ for author in $authors
++ key='luis|7|3'
++ [[ -z '' ]]
++ BEST_TIME["$key"]=1780398284
++ BEST_FILE["$key"]=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++ IFS=
++ read -r -d '' file
++ process_script_file /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh shell_name theme exercise authors mtime
+++ script_shell /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local first_line
++++ get_first_line /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++++ IFS=
++++ read -r line
++++ printf %s '#!/bin/bash'
+++ first_line='#!/bin/bash'
+++ [[ #!/bin/bash == \#\!* ]]
+++ printf %s /bin/bash
++ shell_name=/bin/bash
++ [[ -n /bin/bash ]]
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh Tema
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++++ local label=Tema
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=8
++++ printf %s 8
++++ return 0
+++ trim_spaces 8
+++ tr -d '[:space:]'
+++ printf %s 8
++ theme=8
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh Ejercicio
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++++ local label=Ejercicio
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=1
++++ printf %s 1
++++ return 0
+++ trim_spaces 1
+++ printf %s 1
+++ tr -d '[:space:]'
++ exercise=1
+++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh Autores
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local label=Autores
+++ local line value
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ value='ana maria'
+++ printf %s 'ana maria'
+++ return 0
++ authors='ana maria'
++ [[ -n 8 ]]
++ [[ -n 1 ]]
++ [[ -n ana maria ]]
+++ stat -c %Y /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++ mtime=1780398284
++ register_script /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh 8 1 'ana maria' /bin/bash 1780398284
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh theme=8 exercise=1 'authors=ana maria' shell_name=/bin/bash mtime=1780398284 author key
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.kUFK2LITZz
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:anamaria ]]
+++ printf '%s\n' '#Autores:ana maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.kUFK2LITZz
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.kUFK2LITZz
++ SCRIPT_HASH["$file"]=36cb63a33c21ba277df8ec8fe24a41a9e26cd82d1526a44475c219b9a2d4af03
++ SCRIPT_AUTORES["$file"]='ana maria'
++ SCRIPT_SHELL["$file"]=/bin/bash
++ SCRIPT_TEMA["$file"]=8
++ SCRIPT_EJERCICIO["$file"]=1
++ for author in $authors
++ key='ana|8|1'
++ [[ -z '' ]]
++ BEST_TIME["$key"]=1780398284
++ BEST_FILE["$key"]=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++ for author in $authors
++ key='maria|8|1'
++ [[ -z 1780398284 ]]
++ ((  mtime > BEST_TIME[maria|8|1]  ))
++ IFS=
++ read -r -d '' file
++ process_script_file /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh shell_name theme exercise authors mtime
+++ script_shell /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local first_line
++++ get_first_line /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++++ IFS=
++++ read -r line
++++ printf %s '#!/bin/bash'
+++ first_line='#!/bin/bash'
+++ [[ #!/bin/bash == \#\!* ]]
+++ printf %s /bin/bash
++ shell_name=/bin/bash
++ [[ -n /bin/bash ]]
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh Tema
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++++ local label=Tema
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=7
++++ printf %s 7
++++ return 0
+++ trim_spaces 7
+++ printf %s 7
+++ tr -d '[:space:]'
++ theme=7
++++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh Ejercicio
++++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++++ local label=Ejercicio
++++ local line value
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ IFS=
++++ read -r line
++++ case "$line" in
++++ value=3
++++ printf %s 3
++++ return 0
+++ trim_spaces 3
+++ printf %s 3
+++ tr -d '[:space:]'
++ exercise=3
+++ get_header_value /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh Autores
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local label=Autores
+++ local line value
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ IFS=
+++ read -r line
+++ case "$line" in
+++ value=ana
+++ printf %s ana
+++ return 0
++ authors=ana
++ [[ -n 7 ]]
++ [[ -n 3 ]]
++ [[ -n ana ]]
+++ stat -c %Y /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++ mtime=1780398284
++ register_script /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh 7 3 ana /bin/bash 1780398284
++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh theme=7 exercise=3 authors=ana shell_name=/bin/bash mtime=1780398284 author key
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.avAkFk3S4e
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana == [[:space:]]*#* ]]
+++ [[ -z #Autores:ana ]]
+++ printf '%s\n' '#Autores:ana'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.avAkFk3S4e
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.avAkFk3S4e
++ SCRIPT_HASH["$file"]=2783f41fa723e3511a52ee93f26402fd1cd2b1a8b4c1d527251ca4c5ac723b2c
++ SCRIPT_AUTORES["$file"]=ana
++ SCRIPT_SHELL["$file"]=/bin/bash
++ SCRIPT_TEMA["$file"]=7
++ SCRIPT_EJERCICIO["$file"]=3
++ for author in $authors
++ key='ana|7|3'
++ [[ -z '' ]]
++ BEST_TIME["$key"]=1780398284
++ BEST_FILE["$key"]=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++ IFS=
++ read -r -d '' file
++ for key in "${!BEST_FILE[@]}"
++ [[ -z '' ]]
++ SEEN_SELECTED["${BEST_FILE[$key]}"]=1
++ selected_files+=("${BEST_FILE[$key]}")
++ for key in "${!BEST_FILE[@]}"
++ [[ -z '' ]]
++ SEEN_SELECTED["${BEST_FILE[$key]}"]=1
++ selected_files+=("${BEST_FILE[$key]}")
++ for key in "${!BEST_FILE[@]}"
++ [[ -z '' ]]
++ SEEN_SELECTED["${BEST_FILE[$key]}"]=1
++ selected_files+=("${BEST_FILE[$key]}")
++ for key in "${!BEST_FILE[@]}"
++ [[ -z '' ]]
++ SEEN_SELECTED["${BEST_FILE[$key]}"]=1
++ selected_files+=("${BEST_FILE[$key]}")
++ for selected in "${selected_files[@]}"
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.KMhuYaIHR0
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:maria ]]
+++ printf '%s\n' '#Autores:maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ awk '{print $1}'
+++ sha256sum /tmp/tmp.KMhuYaIHR0
+++ rm -f /tmp/tmp.KMhuYaIHR0
++ hash=74cfea2c21923fc9a2de1a2bc74e1acbb659354e259fc329c51bd73365de1367
++ authors=maria
++ primary_author=maria
++ possible_copies=
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\m\a\r\i\a\/\t\e\m\a\8\_\e\j\1\_\v\2\.\s\h ]]
++ continue
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\m\a\r\i\a\/\t\e\m\a\8\_\e\j\1\_\v\2\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.DUc2aQHq9a
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:anamaria ]]
+++ printf '%s\n' '#Autores:ana maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.DUc2aQHq9a
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.DUc2aQHq9a
++ [[ 36cb63a33c21ba277df8ec8fe24a41a9e26cd82d1526a44475c219b9a2d4af03 == \7\4\c\f\e\a\2\c\2\1\9\2\3\f\c\9\a\2\d\e\1\a\2\b\c\7\4\e\1\a\c\b\b\6\5\9\3\5\4\e\2\5\9\f\c\3\2\9\c\5\1\b\d\7\3\3\6\5\d\e\1\3\6\7 ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\m\a\r\i\a\/\t\e\m\a\8\_\e\j\1\_\v\2\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.4q9vloNIJX
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:luis == [[:space:]]*#* ]]
+++ [[ -z #Autores:luis ]]
+++ printf '%s\n' '#Autores:luis'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.4q9vloNIJX
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.4q9vloNIJX
++ [[ 20a4973efdb6d21b4cd1a66253ef6b618e0cb0298d981922f12b535528761a95 == \7\4\c\f\e\a\2\c\2\1\9\2\3\f\c\9\a\2\d\e\1\a\2\b\c\7\4\e\1\a\c\b\b\6\5\9\3\5\4\e\2\5\9\f\c\3\2\9\c\5\1\b\d\7\3\3\6\5\d\e\1\3\6\7 ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\m\a\r\i\a\/\t\e\m\a\8\_\e\j\1\_\v\2\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.8DUwYJahyA
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana == [[:space:]]*#* ]]
+++ [[ -z #Autores:ana ]]
+++ printf '%s\n' '#Autores:ana'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.8DUwYJahyA
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.8DUwYJahyA
++ [[ 2783f41fa723e3511a52ee93f26402fd1cd2b1a8b4c1d527251ca4c5ac723b2c == \7\4\c\f\e\a\2\c\2\1\9\2\3\f\c\9\a\2\d\e\1\a\2\b\c\7\4\e\1\a\c\b\b\6\5\9\3\5\4\e\2\5\9\f\c\3\2\9\c\5\1\b\d\7\3\3\6\5\d\e\1\3\6\7 ]]
++ possible_copies=
++ [[ -n '' ]]
++ possible_copies=ninguna
++ cat
+++ basename /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++ awk '!/^[[:space:]]*#/ && NF {print}' /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
++ printf '\n'
++ for selected in "${selected_files[@]}"
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.Bg9w2jp26M
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:anamaria ]]
+++ printf '%s\n' '#Autores:ana maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.Bg9w2jp26M
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.Bg9w2jp26M
++ hash=36cb63a33c21ba277df8ec8fe24a41a9e26cd82d1526a44475c219b9a2d4af03
++ authors='ana maria'
++ primary_author=ana
++ possible_copies=
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\8\_\e\j\1\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.99IWJdjRpM
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:maria ]]
+++ printf '%s\n' '#Autores:maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.99IWJdjRpM
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.99IWJdjRpM
++ [[ 74cfea2c21923fc9a2de1a2bc74e1acbb659354e259fc329c51bd73365de1367 == \3\6\c\b\6\3\a\3\3\c\2\1\b\a\2\7\7\d\f\8\e\c\8\f\e\2\4\a\4\1\a\9\e\2\6\c\d\8\2\d\1\5\2\6\a\4\4\4\7\5\c\2\1\9\b\9\a\2\d\4\a\f\0\3 ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\8\_\e\j\1\.\s\h ]]
++ continue
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\8\_\e\j\1\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.HOwZ7gWNMe
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:luis == [[:space:]]*#* ]]
+++ [[ -z #Autores:luis ]]
+++ printf '%s\n' '#Autores:luis'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.HOwZ7gWNMe
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.HOwZ7gWNMe
++ [[ 20a4973efdb6d21b4cd1a66253ef6b618e0cb0298d981922f12b535528761a95 == \3\6\c\b\6\3\a\3\3\c\2\1\b\a\2\7\7\d\f\8\e\c\8\f\e\2\4\a\4\1\a\9\e\2\6\c\d\8\2\d\1\5\2\6\a\4\4\4\7\5\c\2\1\9\b\9\a\2\d\4\a\f\0\3 ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\8\_\e\j\1\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.6sGYCfueG6
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana == [[:space:]]*#* ]]
+++ [[ -z #Autores:ana ]]
+++ printf '%s\n' '#Autores:ana'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.6sGYCfueG6
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.6sGYCfueG6
++ [[ 2783f41fa723e3511a52ee93f26402fd1cd2b1a8b4c1d527251ca4c5ac723b2c == \3\6\c\b\6\3\a\3\3\c\2\1\b\a\2\7\7\d\f\8\e\c\8\f\e\2\4\a\4\1\a\9\e\2\6\c\d\8\2\d\1\5\2\6\a\4\4\4\7\5\c\2\1\9\b\9\a\2\d\4\a\f\0\3 ]]
++ possible_copies=
++ [[ -n '' ]]
++ possible_copies=ninguna
++ cat
+++ basename /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++ awk '!/^[[:space:]]*#/ && NF {print}' /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
++ printf '\n'
++ for selected in "${selected_files[@]}"
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.SI9Kvt00Hj
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:luis == [[:space:]]*#* ]]
+++ [[ -z #Autores:luis ]]
+++ printf '%s\n' '#Autores:luis'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.SI9Kvt00Hj
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.SI9Kvt00Hj
++ hash=20a4973efdb6d21b4cd1a66253ef6b618e0cb0298d981922f12b535528761a95
++ authors=luis
++ primary_author=luis
++ possible_copies=
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\l\u\i\s\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.CAytVJUrrp
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:maria ]]
+++ printf '%s\n' '#Autores:maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.CAytVJUrrp
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.CAytVJUrrp
++ [[ 74cfea2c21923fc9a2de1a2bc74e1acbb659354e259fc329c51bd73365de1367 == \2\0\a\4\9\7\3\e\f\d\b\6\d\2\1\b\4\c\d\1\a\6\6\2\5\3\e\f\6\b\6\1\8\e\0\c\b\0\2\9\8\d\9\8\1\9\2\2\f\1\2\b\5\3\5\5\2\8\7\6\1\a\9\5 ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\l\u\i\s\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.Vr1sm1IUQu
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:anamaria ]]
+++ printf '%s\n' '#Autores:ana maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.Vr1sm1IUQu
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.Vr1sm1IUQu
++ [[ 36cb63a33c21ba277df8ec8fe24a41a9e26cd82d1526a44475c219b9a2d4af03 == \2\0\a\4\9\7\3\e\f\d\b\6\d\2\1\b\4\c\d\1\a\6\6\2\5\3\e\f\6\b\6\1\8\e\0\c\b\0\2\9\8\d\9\8\1\9\2\2\f\1\2\b\5\3\5\5\2\8\7\6\1\a\9\5 ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\l\u\i\s\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
++ continue
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\l\u\i\s\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.CPTOuspTbE
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana == [[:space:]]*#* ]]
+++ [[ -z #Autores:ana ]]
+++ printf '%s\n' '#Autores:ana'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.CPTOuspTbE
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.CPTOuspTbE
++ [[ 2783f41fa723e3511a52ee93f26402fd1cd2b1a8b4c1d527251ca4c5ac723b2c == \2\0\a\4\9\7\3\e\f\d\b\6\d\2\1\b\4\c\d\1\a\6\6\2\5\3\e\f\6\b\6\1\8\e\0\c\b\0\2\9\8\d\9\8\1\9\2\2\f\1\2\b\5\3\5\5\2\8\7\6\1\a\9\5 ]]
++ possible_copies=
++ [[ -n '' ]]
++ possible_copies=ninguna
++ cat
+++ basename /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++ awk '!/^[[:space:]]*#/ && NF {print}' /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
++ printf '\n'
++ for selected in "${selected_files[@]}"
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.yM6AvBa9MZ
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana == [[:space:]]*#* ]]
+++ [[ -z #Autores:ana ]]
+++ printf '%s\n' '#Autores:ana'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.yM6AvBa9MZ
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.yM6AvBa9MZ
++ hash=2783f41fa723e3511a52ee93f26402fd1cd2b1a8b4c1d527251ca4c5ac723b2c
++ authors=ana
++ primary_author=ana
++ possible_copies=
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.ggNyGCME9B
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:maria ]]
+++ printf '%s\n' '#Autores:maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.ggNyGCME9B
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.ggNyGCME9B
++ [[ 74cfea2c21923fc9a2de1a2bc74e1acbb659354e259fc329c51bd73365de1367 == \2\7\8\3\f\4\1\f\a\7\2\3\e\3\5\1\1\a\5\2\e\e\9\3\f\2\6\4\0\2\f\d\1\c\d\2\b\1\a\8\b\4\c\1\d\5\2\7\2\5\1\c\a\4\c\5\a\c\7\2\3\b\2\c ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.xTEJcuFmXi
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:8 == [[:space:]]*#* ]]
+++ [[ -z #Tema:8 ]]
+++ printf '%s\n' '#Tema:8'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:1 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:1 ]]
+++ printf '%s\n' '#Ejercicio:1'
+++ IFS=
+++ read -r line
+++ [[ #Autores:ana maria == [[:space:]]*#* ]]
+++ [[ -z #Autores:anamaria ]]
+++ printf '%s\n' '#Autores:ana maria'
+++ IFS=
+++ read -r line
+++ [[ for n in 1 2 3; do == [[:space:]]*#* ]]
+++ [[ -z fornin123;do ]]
+++ printf '%s\n' 'for n in 1 2 3; do'
+++ IFS=
+++ read -r line
+++ [[     echo "$n" == [[:space:]]*#* ]]
+++ [[ -z echo"$n" ]]
+++ printf '%s\n' '    echo "$n"'
+++ IFS=
+++ read -r line
+++ [[ -n done ]]
+++ [[ done == [[:space:]]*#* ]]
+++ [[ -z done ]]
+++ printf '%s\n' done
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.xTEJcuFmXi
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.xTEJcuFmXi
++ [[ 36cb63a33c21ba277df8ec8fe24a41a9e26cd82d1526a44475c219b9a2d4af03 == \2\7\8\3\f\4\1\f\a\7\2\3\e\3\5\1\1\a\5\2\e\e\9\3\f\2\6\4\0\2\f\d\1\c\d\2\b\1\a\8\b\4\c\1\d\5\2\7\2\5\1\c\a\4\c\5\a\c\7\2\3\b\2\c ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
+++ content_hash /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local file=/home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
+++ local tmp line
++++ mktemp
+++ tmp=/tmp/tmp.YGMDMICIVv
+++ IFS=
+++ read -r line
+++ [[ #!/bin/bash == [[:space:]]*#* ]]
+++ [[ -z #!/bin/bash ]]
+++ printf '%s\n' '#!/bin/bash'
+++ IFS=
+++ read -r line
+++ [[ #Tema:7 == [[:space:]]*#* ]]
+++ [[ -z #Tema:7 ]]
+++ printf '%s\n' '#Tema:7'
+++ IFS=
+++ read -r line
+++ [[ #Ejercicio:3 == [[:space:]]*#* ]]
+++ [[ -z #Ejercicio:3 ]]
+++ printf '%s\n' '#Ejercicio:3'
+++ IFS=
+++ read -r line
+++ [[ #Autores:luis == [[:space:]]*#* ]]
+++ [[ -z #Autores:luis ]]
+++ printf '%s\n' '#Autores:luis'
+++ IFS=
+++ read -r line
+++ [[ echo "hola" == [[:space:]]*#* ]]
+++ [[ -z echo"hola" ]]
+++ printf '%s\n' 'echo "hola"'
+++ IFS=
+++ read -r line
+++ [[ -n echo "practica" ]]
+++ [[ echo "practica" == [[:space:]]*#* ]]
+++ [[ -z echo"practica" ]]
+++ printf '%s\n' 'echo "practica"'
+++ IFS=
+++ read -r line
+++ [[ -n '' ]]
+++ sha256sum /tmp/tmp.YGMDMICIVv
+++ awk '{print $1}'
+++ rm -f /tmp/tmp.YGMDMICIVv
++ [[ 20a4973efdb6d21b4cd1a66253ef6b618e0cb0298d981922f12b535528761a95 == \2\7\8\3\f\4\1\f\a\7\2\3\e\3\5\1\1\a\5\2\e\e\9\3\f\2\6\4\0\2\f\d\1\c\d\2\b\1\a\8\b\4\c\1\d\5\2\7\2\5\1\c\a\4\c\5\a\c\7\2\3\b\2\c ]]
++ for other_file in "${selected_files[@]}"
++ [[ /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh == \/\h\o\m\e\/\r\a\f\a\e\l\/\p\r\o\y\e\c\t\o\/\s\c\r\i\p\t\s\/\r\e\p\a\s\o\/\d\a\t\o\s\/\e\j\3\/\s\c\r\i\p\t\s\_\a\l\u\m\n\o\s\/\a\n\a\/\t\e\m\a\7\_\e\j\3\.\s\h ]]
++ continue
++ possible_copies=
++ [[ -n '' ]]
++ possible_copies=ninguna
++ cat
+++ basename /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++ awk '!/^[[:space:]]*#/ && NF {print}' /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
++ printf '\n'
++ echo 'Informe de scripts generado en /home/rafael/proyecto/scripts/repaso/salidas/ej3/informe_scripts.txt'
++ log_msg 'Auditoria de scripts completada.'
++ mkdir -p /home/rafael/proyecto/scripts/repaso/salidas/ej3
+++ timestamp
+++ date '+%Y-%m-%d %H:%M:%S'
++ printf '[%s] %s\n' '2026-06-02 13:10:25' 'Auditoria de scripts completada.'
++ false
