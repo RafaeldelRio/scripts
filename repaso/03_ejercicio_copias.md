@@ -1,12 +1,9 @@
-# Ejercicio 3. Gestor de copias rotativas y auditoria de scripts
-
-## Objetivo
+# Ejercicio especial. Gestor de copias rotativas y auditoria de scripts
 
 Implementa un script en Bash que combine los patrones mas avanzados del bloque de administracion: configuracion oculta por proyecto, backups rotativos, restauracion, rollback, recursividad y auditoria de scripts con deteccion de posibles copias.
 
-## Escenario
 
-Cada proyecto tiene un fichero oculto `.repasoBackup.conf` con este formato:
+Este ejercicio surge de un ejercicio de examen, que he complicado un poco más. Como los otros ejercicios, aquí también prefiero que el entorno sea simulado, para no depender de configuraciones propias del sistema operativo. Cada proyecto tiene un fichero oculto `.repasoBackup.conf` con este formato:
 
 ```text
 numeroCopias=2
@@ -14,8 +11,6 @@ contenidoCopia=documentos:codigo:README.md
 ```
 
 El script debe trabajar sobre directorios locales y no sobre cuentas reales del sistema.
-
-## Operaciones obligatorias
 
 La sintaxis debe admitir una o varias de estas opciones:
 
@@ -25,7 +20,6 @@ La sintaxis debe admitir una o varias de estas opciones:
 - `-t` mostrar el arbol de copias existentes
 - `-h` mostrar ayuda
 
-## Parte de backup
 
 Para cada proyecto valido el script debe:
 
@@ -36,8 +30,6 @@ Para cada proyecto valido el script debe:
 - hacer rollback si la compresion falla y no dejar archivos parciales
 - mantener solo las `N` copias mas recientes
 
-## Parte de restauracion
-
 Al restaurar debe:
 
 - localizar la copia mas reciente del proyecto
@@ -45,9 +37,9 @@ Al restaurar debe:
 - dejar trazabilidad en el log
 - fallar con mensaje claro si no existen copias
 
-## Parte de auditoria de scripts
 
-Los scripts a auditar incluyen esta cabecera minima:
+
+Los scripts a auditar incluyen esta cabecera minima. Esto es para que podamos detectarlos:
 
 ```text
 #!/bin/bash
@@ -64,17 +56,10 @@ El script debe:
 - generar un informe resumen
 - detectar posibles copias comparando el hash del contenido sin comentarios
 
-## Restricciones
+
+Para complicar aún más el asunto, os propongo las siguientes restricciones:
 
 - uso obligatorio de funciones
 - uso obligatorio de arrays asociativos en la deduplicacion
 - debe existir un log con operaciones y errores
 - el arbol de copias debe generarse mediante una funcion recursiva
-
-## Criterios de correccion
-
-- parseo correcto de la configuracion oculta
-- rotacion correcta de copias
-- rollback real al fallar un backup
-- auditoria coherente y bien resumida
-- recursion clara y sin depender del comando `tree`

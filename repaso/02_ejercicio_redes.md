@@ -1,10 +1,8 @@
-# Ejercicio 2. Analizador de red y subredes sin dependencias externas
-
-## Objetivo
+# Ejercicio especial. Analizador de red y subredes sin dependencias externas
 
 Desarrolla un script en Bash que permita practicar la parte mas tecnica del temario de redes y shell script sin depender de la red real del equipo.
 
-El script debe trabajar con capturas locales y repasar estos conceptos:
+El script debe trabajar con capturas locales y repasar estos conceptos. Esto es para evitar dependencias con el estado del sistema. Podéis hacerlo en real, usando los comandos si queréis, pero prefiero que primero lo tengamos para un entorno simulado:
 
 - validacion robusta de IPv4 y mascaras
 - notacion CIDR y mascara decimal
@@ -16,16 +14,12 @@ El script debe trabajar con capturas locales y repasar estos conceptos:
 - conteo exacto de conexiones TCP establecidas en un puerto
 - consulta de vecinos ARP e interfaces desde ficheros de prueba
 
-## Datos de entrada
-
-El script usara estos ficheros locales:
+Para el entorno simulado del script he preparado los siguientes archivos:
 
 - `dns_reverso.tsv`: `ip<TAB>nombre`
 - `conexiones_tcp.tsv`: `estado<TAB>local<TAB>remoto`
 - `vecinos_arp.tsv`: `ip<TAB>mac<TAB>interfaz<TAB>estado`
 - `interfaces.tsv`: `interfaz<TAB>rx_bytes<TAB>tx_bytes<TAB>rx_err<TAB>tx_err<TAB>dropped`
-
-## Operaciones obligatorias
 
 El script debe mostrar un menu persistente con estas opciones:
 
@@ -36,17 +30,15 @@ El script debe mostrar un menu persistente con estas opciones:
 5. Exportar un informe con el ultimo estado calculado y salir
 6. Salir sin exportar
 
-## Restricciones
-
+Para que use el entorno simulado, vamos a evitar lo siguiente:
 - No puede llamar a `ping`, `dig`, `ss` ni `ip` sobre la maquina real
 - Debe validar octetos, prefijos CIDR, puertos e interfaces
 - El calculo binario debe producir siempre octetos de 8 bits
 - Debe existir un fichero de log
 - Si no se ha ejecutado una operacion, el informe debe indicar `sin datos`
 
-## Salidas esperadas
 
-La opcion de calculo de subred debe mostrar al menos:
+Lo que se espera con la opcion de calculo de subred es al menos:
 
 - IP introducida
 - mascara decimal
@@ -62,7 +54,8 @@ La opcion de calculo de subred debe mostrar al menos:
 
 El informe final debe incluir tambien los ultimos resultados de DNS, conexiones y vecinos/interfaz.
 
-## Casos limite a contemplar
+
+Se deben contemplar ciertos posibles errores, que en ese caso los debemos gestionar como hemos visto en otros ejercicios anteriores:
 
 - octetos fuera de rango
 - CIDR fuera de `0..32`
@@ -70,11 +63,3 @@ El informe final debe incluir tambien los ultimos resultados de DNS, conexiones 
 - puertos no numericos
 - IP sin entrada en la tabla DNS
 - interfaz o vecino inexistente en los ficheros de prueba
-
-## Criterios de correccion
-
-- funciones de conversion bien separadas
-- operaciones bit a bit correctas
-- menu robusto y repetible
-- parseo correcto de tablas TSV
-- informe claro y consistente
