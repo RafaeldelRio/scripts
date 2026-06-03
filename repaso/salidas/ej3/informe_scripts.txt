@@ -1,50 +1,43 @@
-########################################################################
-Nombre del script: tema8_ej1_v2.sh
-Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
-Autores: maria
-Shell: /bin/bash
-Tema: 8
-Ejercicio: 1
-Posible copia de: ana
-########################################################################
-for n in 1 2 3; do
-    echo "$n"
-done
+INFORME DE SCRIPTS
+Fecha: 2026-06-02 17:03:59
 
-########################################################################
-Nombre del script: tema8_ej1.sh
-Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
-Autores: ana maria
-Shell: /bin/bash
-Tema: 8
-Ejercicio: 1
-Posible copia de: maria
-########################################################################
-for n in 1 2 3; do
-    echo "$n"
-done
-
-########################################################################
-Nombre del script: tema7_ej3.sh
-Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
-Autores: luis
-Shell: /bin/bash
+--------------------------------------------------
+Script: tema7_ej3.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
 Tema: 7
 Ejercicio: 3
-Posible copia de: ana
-########################################################################
-echo "hola"
-echo "practica"
-
-########################################################################
-Nombre del script: tema7_ej3.sh
-Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
 Autores: ana
 Shell: /bin/bash
+Posible copia de: ninguna
+
+--------------------------------------------------
+Script: tema8_ej1.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
+Tema: 8
+Ejercicio: 1
+Autores: ana maria
+Shell: /bin/bash
+Posible copia de: ninguna
+
+--------------------------------------------------
+Script ignorado: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ignorar/sin_cabecera.sh
+Motivo: falta shebang o cabeceras minimas
+
+--------------------------------------------------
+Script: tema7_ej3.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/luis/tema7_ej3.sh
 Tema: 7
 Ejercicio: 3
-Posible copia de: luis
-########################################################################
-echo "hola"
-echo "practica"
+Autores: luis
+Shell: /bin/bash
+Posible copia de: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema7_ej3.sh
+
+--------------------------------------------------
+Script: tema8_ej1_v2.sh
+Ruta: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/maria/tema8_ej1_v2.sh
+Tema: 8
+Ejercicio: 1
+Autores: maria
+Shell: /bin/bash
+Posible copia de: /home/rafael/proyecto/scripts/repaso/datos/ej3/scripts_alumnos/ana/tema8_ej1.sh
 

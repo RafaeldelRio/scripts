@@ -1,0 +1,3 @@
+Nombre: Ines Delgado Ruiz
+Nivel: alumno
+DNI: 11223344A

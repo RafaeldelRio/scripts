@@ -1,1 +1,2 @@
-/home/rafael/proyecto/scripts/repaso/trabajo/ej1/sim_home/idelrui344/documentos/entrega.sh
+/home/rafael/proyecto/scripts/repaso/trabajo/ej1/homes/alixu455/tarea.sh
+/home/rafael/proyecto/scripts/repaso/trabajo/ej1/homes/idelrui344/tarea.sh

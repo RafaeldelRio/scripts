@@ -1,359 +1,231 @@
 #!/bin/bash
 
-# Script de repaso para practicar redes sin tocar interfaces ni sockets reales.
-# Toda la informacion sale de capturas locales para que el ejercicio sea repetible.
+# Version simplificada del ejercicio de redes.
+# Trabaja solo con los ficheros locales del directorio repaso.
 
-# Activa un modo mas estricto para detectar fallos antes.
-set -u
-set -o pipefail
-
-# Directorio base y rutas de datos simulados.
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 DATA_DIR="$SCRIPT_DIR/datos/ej2"
-OUTPUT_DIR="$SCRIPT_DIR/salidas/ej2"
-LOG_FILE="$OUTPUT_DIR/redes.log"
-REPORT_FILE="$OUTPUT_DIR/informe_redes.txt"
+OUT_DIR="$SCRIPT_DIR/salidas/ej2"
 
 DNS_FILE="$DATA_DIR/dns_reverso.tsv"
 CONNECTIONS_FILE="$DATA_DIR/conexiones_tcp.tsv"
 NEIGH_FILE="$DATA_DIR/vecinos_arp.tsv"
 INTERFACES_FILE="$DATA_DIR/interfaces.tsv"
+REPORT_FILE="$OUT_DIR/informe_redes.txt"
 
-# `LAST_STATE` guarda el ultimo resultado de cada apartado del menu.
-# Asi el informe final puede exportarse sin recalcular nada.
-declare -A LAST_STATE=(
-	[entrada]=sin_datos
-	[mascara]=sin_datos
-	[cidr]=sin_datos
-	[red]=sin_datos
-	[broadcast]=sin_datos
-	[rango]=sin_datos
-	[hosts]=sin_datos
-	[binario]=sin_datos
-	[hex]=sin_datos
-	[ipv6_6to4]=sin_datos
-	[ipv6_mapeada]=sin_datos
-	[dns]=sin_datos
-	[conexiones]=sin_datos
-	[vecino]=sin_datos
-	[interfaz]=sin_datos
-)
+ultimo_calculo='sin_datos'
+ultimo_dns='sin_datos'
+ultimo_conexiones='sin_datos'
+ultimo_vecino='sin_datos'
+ultima_interfaz='sin_datos'
 
-# Marca temporal comun para log e informe.
-timestamp() {
-	date '+%Y-%m-%d %H:%M:%S'
+preparar() {
+	mkdir -p "$OUT_DIR"
 }
 
-# Registra lo que va haciendo el script.
-log_msg() {
-	mkdir -p "$OUTPUT_DIR"
-	printf '[%s] %s\n' "$(timestamp)" "$1" >> "$LOG_FILE"
-}
-
-# Ayuda minima de uso por linea de comandos.
-usage() {
-	cat <<EOF
-Uso: $0 [-d directorio_datos] [-o directorio_salida]
-EOF
-}
-
-# Prepara la carpeta de salida y limpia el log para la sesion actual.
-init_paths() {
-	mkdir -p "$OUTPUT_DIR"
-	: > "$LOG_FILE"
-}
-
-# Valida el formato decimal clasico de una IPv4.
-is_valid_ipv4() {
+es_ipv4() {
 	local ip="$1"
 	local IFS='.'
-	local -a octets
-	local octet
-	read -r -a octets <<< "$ip"
-	[[ ${#octets[@]} -eq 4 ]] || return 1
-	for octet in "${octets[@]}"; do
-		[[ "$octet" =~ ^[0-9]+$ ]] || return 1
-		(( octet >= 0 && octet <= 255 )) || return 1
+	local a b c d
+	read -r a b c d <<< "$ip"
+	for n in "$a" "$b" "$c" "$d"; do
+		[[ "$n" =~ ^[0-9]+$ ]] || return 1
+		(( n >= 0 && n <= 255 )) || return 1
 	done
-	return 0
+	[[ -n "$a" && -n "$b" && -n "$c" && -n "$d" ]]
 }
 
-# Convierte IPv4 decimal en entero de 32 bits para operar con mascaras.
-ip_to_int() {
+ip_a_entero() {
 	local ip="$1"
 	local IFS='.'
-	local -a octets
-	read -r -a octets <<< "$ip"
-	echo $(( (octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3] ))
+	local a b c d
+	read -r a b c d <<< "$ip"
+	echo $(( (a << 24) + (b << 16) + (c << 8) + d ))
 }
 
-# Operacion inversa: reconstruye la IPv4 desde un entero.
-int_to_ip() {
-	local value="$1"
+entero_a_ip() {
+	local n="$1"
 	printf '%d.%d.%d.%d\n' \
-		$(( (value >> 24) & 255 )) \
-		$(( (value >> 16) & 255 )) \
-		$(( (value >> 8) & 255 )) \
-		$(( value & 255 ))
+		$(( (n >> 24) & 255 )) \
+		$(( (n >> 16) & 255 )) \
+		$(( (n >> 8) & 255 )) \
+		$(( n & 255 ))
 }
 
-# Genera la mascara como entero a partir de los bits CIDR.
-bits_to_mask_int() {
+bits_a_mascara() {
 	local bits="$1"
-	[[ "$bits" =~ ^[0-9]+$ ]] || return 1
-	(( bits >= 0 && bits <= 32 )) || return 1
+	local mask=0
 	if (( bits == 0 )); then
-		echo 0
-	else
-		echo $(( (0xFFFFFFFF << (32 - bits)) & 0xFFFFFFFF ))
+		echo 0.0.0.0
+		return
 	fi
+	mask=$(( (0xFFFFFFFF << (32 - bits)) & 0xFFFFFFFF ))
+	entero_a_ip "$mask"
 }
 
-# Comprueba que una mascara decimal sea contigua y devuelve sus bits CIDR.
-mask_int_to_bits() {
-	local mask_int="$1"
-	local bits=0
-	local seen_zero=0
+octeto_a_bits() {
+	local n="$1"
+	local txt=''
 	local bit
-	for ((bit = 31; bit >= 0; bit--)); do
-		if (( (mask_int >> bit) & 1 )); then
-			(( seen_zero == 0 )) || return 1
-			bits=$((bits + 1))
-		else
-			seen_zero=1
-		fi
+	for ((bit = 7; bit >= 0; bit--)); do
+		txt+=$(( (n >> bit) & 1 ))
+	done
+	printf '%s' "$txt"
+}
+
+mascara_a_bits() {
+	local mask="$1"
+	local IFS='.'
+	local a b c d bits=0
+	read -r a b c d <<< "$mask"
+	for n in "$a" "$b" "$c" "$d"; do
+		case "$n" in
+			255) bits=$((bits + 8)) ;;
+			254) bits=$((bits + 7)) ;;
+			252) bits=$((bits + 6)) ;;
+			248) bits=$((bits + 5)) ;;
+			240) bits=$((bits + 4)) ;;
+			224) bits=$((bits + 3)) ;;
+			192) bits=$((bits + 2)) ;;
+			128) bits=$((bits + 1)) ;;
+			0) ;;
+			*) return 1 ;;
+		esac
 	done
 	echo "$bits"
 }
 
-mask_ip_to_bits() {
-	local mask_ip="$1"
-# Pasa una mascara decimal, como 255.255.255.0, a longitud de prefijo.
-	local mask_int
-	is_valid_ipv4 "$mask_ip" || return 1
-	mask_int=$(ip_to_int "$mask_ip")
-	mask_int_to_bits "$mask_int"
-}
-
-# Mascara por defecto de clase tradicional si el usuario da solo una IP.
-classful_bits() {
-	local first_octet="$1"
-	if (( first_octet >= 1 && first_octet <= 126 )); then
+bits_por_clase() {
+	local first="$1"
+	if (( first >= 1 && first <= 126 )); then
 		echo 8
-	elif (( first_octet >= 128 && first_octet <= 191 )); then
+	elif (( first >= 128 && first <= 191 )); then
 		echo 16
-	elif (( first_octet >= 192 && first_octet <= 223 )); then
+	else
 		echo 24
-	else
-		return 1
 	fi
 }
 
-# Atajo para obtener la mascara decimal a partir de un prefijo.
-mask_from_bits() {
-	int_to_ip "$(bits_to_mask_int "$1")"
-}
-
-# Construye un octeto binario con padding manual a 8 bits.
-binary_octet() {
-	local value="$1"
-	local result=""
-	local bit
-	for ((bit = 7; bit >= 0; bit--)); do
-		result+=$(( (value >> bit) & 1 ))
-	done
-	printf '%s' "$result"
-}
-
-# Convierte toda la direccion IPv4 en notacion binaria pura.
-ipv4_to_binary() {
-	local ip="$1"
+calcular_red() {
+	local entrada="$1"
+	local ip bits mask ip_n mask_n red_n bc_n host1 host2 hosts
 	local IFS='.'
-	local -a octets
-	read -r -a octets <<< "$ip"
-	printf '%s.%s.%s.%s\n' \
-		"$(binary_octet "${octets[0]}")" \
-		"$(binary_octet "${octets[1]}")" \
-		"$(binary_octet "${octets[2]}")" \
-		"$(binary_octet "${octets[3]}")"
-}
+	local a b c d
+	local binario hexadecimal ipv6_6to4 ipv6_mapeada
 
-# Devuelve el formato hexadecimal que luego se reutiliza en 6to4 y mapped IPv6.
-ipv4_to_hex() {
-	local ip="$1"
-	local IFS='.'
-	local -a octets
-	read -r -a octets <<< "$ip"
-	printf '%02X%02X:%02X%02X\n' "${octets[0]}" "${octets[1]}" "${octets[2]}" "${octets[3]}"
-}
-
-# Conversion didactica a prefijo 6to4.
-ipv4_to_6to4() {
-	printf '2002:%s::/48\n' "$(ipv4_to_hex "$1")"
-}
-
-# Conversion a IPv4 mapeada en IPv6.
-ipv4_to_mapped() {
-	printf '::ffff:%s\n' "$(ipv4_to_hex "$1")"
-}
-
-# Resuelve las tres formas de entrada admitidas:
-# - IP/CIDR
-# - IP + mascara decimal
-# - solo IP con mascara por defecto de clase
-calculate_network() {
-	local raw_input="$1"
-	local raw_mask="${2:-}"
-	local ip bits mask_int ip_int network_int broadcast_int host_min host_max usable_hosts first_octet
-
-	if [[ "$raw_input" == */* ]]; then
-		ip="${raw_input%/*}"
-		bits="${raw_input#*/}"
-	elif [[ -n "$raw_mask" ]]; then
-		ip="$raw_input"
-		bits=$(mask_ip_to_bits "$raw_mask") || return 1
+	if [[ "$entrada" == */* ]]; then
+		ip=${entrada%/*}
+		bits=${entrada#*/}
+	elif [[ "$entrada" == *" "* ]]; then
+		ip=${entrada%% *}
+		mask=${entrada#* }
+		bits=$(mascara_a_bits "$mask") || return 1
 	else
-		ip="$raw_input"
-		# Si no hay mascara explicita, se intenta deducir la clase historica.
-		first_octet=${ip%%.*}
-		bits=$(classful_bits "$first_octet") || return 1
+		ip="$entrada"
+		read -r a b c d <<< "$ip"
+		bits=$(bits_por_clase "$a")
 	fi
 
-	# A partir de aqui todo se hace en entero para simplificar AND y OR bit a bit.
-	is_valid_ipv4 "$ip" || return 1
-	mask_int=$(bits_to_mask_int "$bits") || return 1
-	ip_int=$(ip_to_int "$ip")
-	network_int=$(( ip_int & mask_int ))
-	broadcast_int=$(( network_int | (0xFFFFFFFF ^ mask_int) ))
+	es_ipv4 "$ip" || return 1
+	[[ "$bits" =~ ^[0-9]+$ ]] || return 1
+	(( bits >= 0 && bits <= 32 )) || return 1
 
-	# Los prefijos /31 y /32 tienen un tratamiento especial en numero de hosts.
-	if (( bits == 32 )); then
-		host_min=$(int_to_ip "$network_int")
-		host_max="$host_min"
-		usable_hosts=1
-	elif (( bits == 31 )); then
-		host_min=$(int_to_ip "$network_int")
-		host_max=$(int_to_ip "$broadcast_int")
-		usable_hosts=2
+	mask=$(bits_a_mascara "$bits")
+	ip_n=$(ip_a_entero "$ip")
+	mask_n=$(ip_a_entero "$mask")
+	red_n=$(( ip_n & mask_n ))
+	bc_n=$(( red_n | (0xFFFFFFFF ^ mask_n) ))
+
+	if (( bits >= 31 )); then
+		host1=$(entero_a_ip "$red_n")
+		host2=$(entero_a_ip "$bc_n")
+		hosts=$(( 2 ** (32 - bits) ))
 	else
-		host_min=$(int_to_ip $((network_int + 1)))
-		host_max=$(int_to_ip $((broadcast_int - 1)))
-		usable_hosts=$(( (1 << (32 - bits)) - 2 ))
+		host1=$(entero_a_ip $((red_n + 1)))
+		host2=$(entero_a_ip $((bc_n - 1)))
+		hosts=$(( (2 ** (32 - bits)) - 2 ))
 	fi
 
-	# Se guarda todo en memoria para que el informe final reutilice el ultimo calculo.
-	LAST_STATE[entrada]="$ip"
-	LAST_STATE[mascara]="$(int_to_ip "$mask_int")"
-	LAST_STATE[cidr]="/$bits"
-	LAST_STATE[red]="$(int_to_ip "$network_int")"
-	LAST_STATE[broadcast]="$(int_to_ip "$broadcast_int")"
-	LAST_STATE[rango]="$host_min - $host_max"
-	LAST_STATE[hosts]="$usable_hosts"
-	LAST_STATE[binario]="$(ipv4_to_binary "$ip")"
-	LAST_STATE[hex]="$(ipv4_to_hex "$ip")"
-	LAST_STATE[ipv6_6to4]="$(ipv4_to_6to4 "$ip")"
-	LAST_STATE[ipv6_mapeada]="$(ipv4_to_mapped "$ip")"
+	binario=$(printf '%s.%s.%s.%s' \
+		"$(octeto_a_bits $(( (ip_n >> 24) & 255 )))" \
+		"$(octeto_a_bits $(( (ip_n >> 16) & 255 )))" \
+		"$(octeto_a_bits $(( (ip_n >> 8) & 255 )))" \
+		"$(octeto_a_bits $(( ip_n & 255 )))")
+	hexadecimal=$(printf '%02X%02X:%02X%02X' \
+		$(( (ip_n >> 24) & 255 )) \
+		$(( (ip_n >> 16) & 255 )) \
+		$(( (ip_n >> 8) & 255 )) \
+		$(( ip_n & 255 )))
+	ipv6_6to4=$(printf '2002:%02X%02X:%02X%02X::/48' \
+		$(( (ip_n >> 24) & 255 )) \
+		$(( (ip_n >> 16) & 255 )) \
+		$(( (ip_n >> 8) & 255 )) \
+		$(( ip_n & 255 )))
+	ipv6_mapeada=$(printf '::ffff:%02X%02X:%02X%02X' \
+		$(( (ip_n >> 24) & 255 )) \
+		$(( (ip_n >> 16) & 255 )) \
+		$(( (ip_n >> 8) & 255 )) \
+		$(( ip_n & 255 )))
 
-	cat <<EOF
-IP: ${LAST_STATE[entrada]}
-Mascara: ${LAST_STATE[mascara]}
-CIDR: ${LAST_STATE[cidr]}
-Red: ${LAST_STATE[red]}
-Broadcast: ${LAST_STATE[broadcast]}
-Rango util: ${LAST_STATE[rango]}
-Hosts utiles: ${LAST_STATE[hosts]}
-Binario: ${LAST_STATE[binario]}
-Hexadecimal: ${LAST_STATE[hex]}
-IPv6 6to4: ${LAST_STATE[ipv6_6to4]}
-IPv6 mapeada: ${LAST_STATE[ipv6_mapeada]}
+	ultimo_calculo=$(cat <<EOF
+IP: $ip
+Mascara: $mask
+CIDR: /$bits
+Red: $(entero_a_ip "$red_n")
+Broadcast: $(entero_a_ip "$bc_n")
+Rango util: $host1 - $host2
+Hosts utiles: $hosts
+Binario: $binario
+Hexadecimal: $hexadecimal
+IPv6 6to4: $ipv6_6to4
+IPv6 mapeada: $ipv6_mapeada
 EOF
-	log_msg "Calculo de red ejecutado para $ip/$bits"
-	return 0
+)
+
+	echo "$ultimo_calculo"
 }
 
-# Busca una entrada de DNS inversa dentro de la tabla local.
-lookup_dns() {
+buscar_dns() {
 	local ip="$1"
-	local result
-	is_valid_ipv4 "$ip" || return 1
-	result=$(awk -F '\t' -v wanted="$ip" '$1 == wanted {print $2}' "$DNS_FILE")
-	if [[ -z "$result" ]]; then
-		LAST_STATE[dns]='sin datos'
-		echo 'No existe una entrada DNS local para esa IP.'
-		log_msg "DNS inversa sin resultado para $ip"
-		return 0
-	fi
-	LAST_STATE[dns]="$ip -> $result"
-	echo "$result"
-	log_msg "DNS inversa resuelta para $ip"
-	return 0
+	ultimo_dns=$(awk -F '\t' -v ip="$ip" '$1 == ip {print $2; found=1} END {if (!found) print "sin_datos"}' "$DNS_FILE")
+	echo "DNS inversa: $ultimo_dns"
 }
 
-# Cuenta conexiones ESTAB en un puerto concreto usando la captura local.
-# Se revisan tanto el extremo local como el remoto por simplicidad didactica.
-count_connections() {
-	local port="$1"
+contar_conexiones() {
+	local puerto="$1"
 	local total
-	[[ "$port" =~ ^[0-9]+$ ]] || return 1
-	(( port >= 1 && port <= 65535 )) || return 1
-	total=$(awk -F '\t' -v port=":$port" '$1 == "ESTAB" && ($2 ~ port "$" || $3 ~ port "$") {count++} END {print count + 0}' "$CONNECTIONS_FILE")
-	LAST_STATE[conexiones]="Puerto $port -> $total conexiones ESTAB"
-	echo "$total"
-	log_msg "Conteo de conexiones para puerto $port: $total"
-	return 0
+	total=$(awk -F '\t' -v puerto="$puerto" '$3 == "ESTAB" && $2 == puerto {count++} END {print count+0}' "$CONNECTIONS_FILE")
+	ultimo_conexiones="Puerto $puerto -> $total conexiones ESTAB"
+	echo "$ultimo_conexiones"
 }
 
-# Consulta a la vez un vecino ARP y una interfaz para practicar parseo de TSV.
-lookup_neighbor_and_interface() {
+consultar_vecino_interfaz() {
 	local ip="$1"
-	local iface="$2"
-	local neighbor interface_line
-	is_valid_ipv4 "$ip" || return 1
-	[[ "$iface" =~ ^[[:alnum:]_.-]+$ ]] || return 1
-	neighbor=$(awk -F '\t' -v wanted="$ip" '$1 == wanted {print "IP: "$1" | MAC: "$2" | Interfaz: "$3" | Estado: "$4}' "$NEIGH_FILE")
-	interface_line=$(awk -F '\t' -v wanted="$iface" '$1 == wanted {print "Interfaz: "$1" | RX bytes: "$2" | TX bytes: "$3" | RX err: "$4" | TX err: "$5" | Dropped: "$6}' "$INTERFACES_FILE")
-
-	LAST_STATE[vecino]="${neighbor:-sin datos}"
-	LAST_STATE[interfaz]="${interface_line:-sin datos}"
-
-	printf '%s\n' "${LAST_STATE[vecino]}"
-	printf '%s\n' "${LAST_STATE[interfaz]}"
-	log_msg "Consulta de vecino $ip e interfaz $iface"
-	return 0
+	ultimo_vecino=$(awk -F '\t' -v ip="$ip" '$1 == ip {print $2; found=1} END {if (!found) print "sin_datos"}' "$NEIGH_FILE")
+	ultima_interfaz=$(awk -F '\t' -v ip="$ip" '$1 == ip {print $2; found=1} END {if (!found) print "sin_datos"}' "$INTERFACES_FILE")
+	echo "MAC/Vecino: $ultimo_vecino"
+	echo "Interfaz: $ultima_interfaz"
 }
 
-# Vuelca el ultimo estado conocido del menu a un informe legible.
-export_report() {
+exportar_informe() {
 	cat > "$REPORT_FILE" <<EOF
 INFORME LOCAL DE REDES
-Fecha: $(timestamp)
+Fecha: $(date '+%Y-%m-%d %H:%M:%S')
 
 Ultimo calculo de red:
-- Entrada: ${LAST_STATE[entrada]}
-- Mascara: ${LAST_STATE[mascara]}
-- CIDR: ${LAST_STATE[cidr]}
-- Red: ${LAST_STATE[red]}
-- Broadcast: ${LAST_STATE[broadcast]}
-- Rango util: ${LAST_STATE[rango]}
-- Hosts utiles: ${LAST_STATE[hosts]}
-- Binario: ${LAST_STATE[binario]}
-- Hexadecimal: ${LAST_STATE[hex]}
-- IPv6 6to4: ${LAST_STATE[ipv6_6to4]}
-- IPv6 mapeada: ${LAST_STATE[ipv6_mapeada]}
+$ultimo_calculo
 
 Ultimos resultados adicionales:
-- DNS inversa: ${LAST_STATE[dns]}
-- Conexiones: ${LAST_STATE[conexiones]}
-- Vecino: ${LAST_STATE[vecino]}
-- Interfaz: ${LAST_STATE[interfaz]}
+- DNS inversa: $ultimo_dns
+- Conexiones: $ultimo_conexiones
+- Vecino: $ultimo_vecino
+- Interfaz: $ultima_interfaz
 EOF
-	log_msg 'Informe de redes exportado.'
 	echo "Informe generado en $REPORT_FILE"
 }
 
-# Menu interactivo principal del analizador.
-main_menu() {
-	local option raw_input raw_mask ip port iface
+menu() {
+	local opcion entrada puerto ip
 	while true; do
 		echo
 		echo '=== Analizador local de redes ==='
@@ -363,79 +235,38 @@ main_menu() {
 		echo '4. Consultar vecino ARP e interfaz'
 		echo '5. Exportar informe y salir'
 		echo '6. Salir sin exportar'
-		read -r -p 'Opcion: ' option
+		read -r -p 'Opcion: ' opcion
 
-		case "$option" in
+		case "$opcion" in
 			1)
-				read -r -p 'Introduce IP/CIDR o solo IP: ' raw_input
-				# Solo se pide mascara si la entrada no la trae ya integrada.
-				if [[ "$raw_input" != */* ]]; then
-					read -r -p 'Mascara decimal opcional: ' raw_mask
-				else
-					raw_mask=''
-				fi
-				if ! calculate_network "$raw_input" "$raw_mask"; then
-					echo 'Entrada de red no valida.'
-				fi
+				read -r -p 'IP o IP/CIDR o IP mascara: ' entrada
+				calcular_red "$entrada" || echo 'Entrada no valida'
 				;;
 			2)
-				read -r -p 'IP para DNS inversa: ' ip
-				if ! lookup_dns "$ip"; then
-					echo 'IP no valida.'
-				fi
+				read -r -p 'IP: ' ip
+				buscar_dns "$ip"
 				;;
 			3)
-				read -r -p 'Puerto a revisar: ' port
-				if ! count_connections "$port"; then
-					echo 'Puerto no valido.'
-				fi
+				read -r -p 'Puerto: ' puerto
+				contar_conexiones "$puerto"
 				;;
 			4)
-				read -r -p 'IP del vecino: ' ip
-				read -r -p 'Interfaz: ' iface
-				if ! lookup_neighbor_and_interface "$ip" "$iface"; then
-					echo 'Parametros no validos.'
-				fi
+				read -r -p 'IP: ' ip
+				consultar_vecino_interfaz "$ip"
 				;;
 			5)
-				export_report
+				exportar_informe
 				break
 				;;
 			6)
-				log_msg 'Salida sin informe.'
 				break
 				;;
-			*) echo 'Opcion no valida.' ;;
+			*)
+				echo 'Opcion no valida'
+				;;
 		esac
 	done
 }
 
-# Permite cambiar directorios de datos y de salida sin tocar el codigo.
-while getopts ':d:o:h' option; do
-	case "$option" in
-		d) DATA_DIR="$OPTARG" ;;
-		o) OUTPUT_DIR="$OPTARG" ;;
-		h)
-			usage
-			exit 0
-			;;
-		:)
-			echo "Falta valor para -$OPTARG" >&2
-			exit 1
-			;;
-		\?)
-			echo "Opcion no valida: -$OPTARG" >&2
-			exit 1
-			;;
-	esac
-done
-
-# Se recalculan las rutas por si el usuario ha pasado un directorio alternativo.
-DNS_FILE="$DATA_DIR/dns_reverso.tsv"
-CONNECTIONS_FILE="$DATA_DIR/conexiones_tcp.tsv"
-NEIGH_FILE="$DATA_DIR/vecinos_arp.tsv"
-INTERFACES_FILE="$DATA_DIR/interfaces.tsv"
-
-# Inicializa salidas y abre el menu.
-init_paths
-main_menu
+preparar
+menu

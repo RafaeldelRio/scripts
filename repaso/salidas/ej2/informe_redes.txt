@@ -1,21 +1,21 @@
 INFORME LOCAL DE REDES
-Fecha: 2026-06-02 13:03:54
+Fecha: 2026-06-02 18:08:18
 
 Ultimo calculo de red:
-- Entrada: 192.168.10.25
-- Mascara: 255.255.255.224
-- CIDR: /27
-- Red: 192.168.10.0
-- Broadcast: 192.168.10.31
-- Rango util: 192.168.10.1 - 192.168.10.30
-- Hosts utiles: 30
-- Binario: 11000000.10101000.00001010.00011001
-- Hexadecimal: C0A8:0A19
-- IPv6 6to4: 2002:C0A8:0A19::/48
-- IPv6 mapeada: ::ffff:C0A8:0A19
+IP: 192.168.10.25
+Mascara: 255.255.255.224
+CIDR: /27
+Red: 192.168.10.0
+Broadcast: 192.168.10.31
+Rango util: 192.168.10.1 - 192.168.10.30
+Hosts utiles: 30
+Binario: 11000000.10101000.00001010.00011001
+Hexadecimal: C0A8:0A19
+IPv6 6to4: 2002:C0A8:0A19::/48
+IPv6 mapeada: ::ffff:C0A8:0A19
 
 Ultimos resultados adicionales:
-- DNS inversa: 8.8.8.8 -> dns.google.
-- Conexiones: Puerto 443 -> 3 conexiones ESTAB
-- Vecino: IP: 192.168.10.1 | MAC: aa:bb:cc:dd:ee:01 | Interfaz: eth0 | Estado: REACHABLE
-- Interfaz: Interfaz: eth0 | RX bytes: 203040 | TX bytes: 120304 | RX err: 0 | TX err: 1 | Dropped: 0
+- DNS inversa: sin_datos
+- Conexiones: sin_datos
+- Vecino: sin_datos
+- Interfaz: sin_datos

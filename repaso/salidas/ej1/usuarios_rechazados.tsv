@@ -1,3 +1,2 @@
-6	clave insegura	Ana;Li;Xu;22334455B;alumno;corta
-7	dni invalido	Rosa;Serrano;Lopez;ABC;admin;BuenaClave7
-8	campos incompletos	Mario;Vega;;44556677D;soporte;OtraClave8
+Rosa;Serrano;Lopez;ABC;admin;BuenaClave7	dni invalido
+Mario;Vega;;44556677D;soporte;OtraClave8	campos incompletos
